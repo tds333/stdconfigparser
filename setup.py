@@ -3,7 +3,12 @@ import sys
 import os
 from setuptools import setup
 
-from stdconfigparser import __version__ as version
+#from stdconfigparser import __version__ as version
+
+versiondict = {}
+with open("stdconfigparser.py") as cfgparser:
+	exec(cfgparser.read(), versiondict)
+	version = versiondict["__version__"]
 
 
 setup(name='StdConfigParser',
@@ -29,10 +34,8 @@ Python 3.5 in one module easy to vendor or install as extra dependency.
       author_email='tds333@mailbox.org',
       url='https://github.com/tds333/stdconfigparser',
       license='MIT',
-      packages=['stdconfigparser'],
+      py_modules=['stdconfigparser'],
       tests_require=['pytest'],
       test_suite='pytest',
       include_package_data=True,
-      zip_safe=True,
-      **kwargs
-      )
+      zip_safe=True)
