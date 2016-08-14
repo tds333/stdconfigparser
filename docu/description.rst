@@ -1,5 +1,5 @@
-Intro
-=====
+Introduction
+============
 
 This module provides a StdConfigParser class a simple
 standard INI configuration parser with a specified format. All is based
@@ -49,7 +49,7 @@ optional, everything is also usable for the simplest key value configuration.
 
 
 Human readable configuration
-============================
+----------------------------
 
 First everyone should know, if a configuration is directly used by humans
 it is a user interface and should be threated so.
@@ -811,4 +811,189 @@ Examples
 Examples describe a special use case and the solution how to handle
 this with the StdConfigParser.
 
+Simple
+------
+
+You need a configuration for a small module only with some configuration
+keys. No need for a nested configuration.
+
+In this case you will have one line overhead, the section. Use the same
+name as your module or package as section name. This enables later use
+of one configuration file for different packages. Even if you don't need it
+know, it is for interoperability.
+
+Example:
+
+Your module or package name is 'mymodule'
+
+.. code-block:: INI
+
+    [mymodule]
+    data_dir = /data
+    temp_dir = /temp
+
+In your program code create the config parser instance retrieve the section
+and only use your section.
+
+.. code-block:: Python
+
+    from stdconfigparser import StdConfigParser
+
+    def get_config(path):
+        parser = StdConfigParser()
+        parser.read(path)
+        config = parser["mymodule"]
+        return config
+
+    def main():
+        config = get_config("~/mymodule.cfg")
+        data_dir = config.get("data_dir")
+        temp_dir = config.get("temp_dir")
+
+Defaults
+--------
+
+List of values
+--------------
+
+Multiple sections
+-----------------
+
+Interpolation and defaults
+--------------------------
+
+Config file with interpolation
+------------------------------
+
+Your use case is to have a configuration file in a specific configuration
+directory. The directory path should also be usable in the configuration
+as interpolation value.
+
+Use the defaults parameter to set the configuration directory.
+
+.. code-block:: INI
+
+    [mymodule]
+    project_dir = ${config_dir}/..
+    log_dir = ${project_dir}/log
+    temp_dir = ${project_dir}/tmp
+
+
+.. code-block:: Python
+
+    import os
+    from stdconfigparser import StdConfigParser
+
+    def get_config(path):
+        config_dir = os.path.abspath(os.path.dirname(path))
+        parser = StdConfigParser(defaults={"config_dir": config_dir})
+        parser.read(path)
+        config = parser["mymodule"]
+        return config
+
+    def main():
+        config = get_config("~/mymodule.cfg")
+        project_dir = config.get("project_dir")
+
+
+Environment
+-----------
+
+The os environment information is needed in the configuration as as
+interpolation value.
+The solution is simple, add a section with this information before you read
+your configuration. Don't write it to the default section, make it explicit
+into a new documented section. In the configuration this section can be used
+for substitutions. Document also the environment information will not be updated
+it is only read at startup.
+
+.. code-block:: INI
+
+    [mymodule]
+    project_dir = ${os.environ:home}
+
+In this example the environment section is simply named by the Python module path.
+``os.environ``. But if you prefer a shorter solution you can use the name ``env``
+which is also common to name the environment.
+The environment information is also read before the configuration, this allows
+overwriting in the configuration file. Can be used as a feature for testing.
+
+.. code-block:: Python
+
+    import os
+    from stdconfigparser import StdConfigParser
+
+    def get_config(path):
+        parser = StdConfigParser()
+        parser.read_dict({"os.environ": os.environ}, "environment")
+        parser.read(path)
+        config = parser["mymodule"]
+        return config
+
+    def main():
+        config = get_config("~/mymodule.cfg")
+        project_dir = config.get("project_dir")
+
+
+Complex
+-------
+
+Your users are mainly programmers and already familiar with JSON.
+You cannot resist and want to provide powerful features at configuration level.
+
+
+Config file includes
+--------------------
+
+In a big application sometimes there is the need to have more than one
+configuration file. But one main file should be used to specify the other
+include files.
+
+In this case best is to donate a special key named ``include`` with multi line
+values to name the additional files. Try to avoid recursive includes and other
+more complex stuff here. A feature you thought to be useful can bring you
+near to the hell.
+
+Best here is to support absolute paths and relative paths. Where a relative
+path starts with a ``.`` (dot) and is relative to the specified configuration
+file.
+
+.. code-block:: INI
+
+    [mymodule]
+    include = ./names.cfg
+              ./connections.cfg
+              /etc/mymodule.cfg
+
+    project_name = lotincludes
+
+To solve this we read the main configuration file to get the included ones.
+Build the paths for the files to handle the relative ones.
+Read them and overwrite the result with the main configuration. Because this
+is what most users expect.
+
+
+.. code-block:: Python
+
+    import os
+    from stdconfigparser import StdConfigParser
+
+    def get_config(path):
+        config_dir = os.path.abspath(os.path.dirname(path))
+        main_config = StdConfigParser()
+        main_config.read(path)
+        config_include = main_config.getlines("mymodule", "include", fallback=[])
+        includes = []
+        for include in includes:
+            if include.startswith("."):
+                include = os.path.abspath(os.path.join(config_dir, include))
+            includes.append(include)
+        config = StdConfigParser()
+        config.read(includes)
+        config.read_dict(main_config)
+        return config
+
+    def main():
+        config = get_config("~/mymodule.cfg")
+        project_dir = config.get("myproject", "project_dir")
 
