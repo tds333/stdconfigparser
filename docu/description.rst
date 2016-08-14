@@ -48,10 +48,10 @@ optional, everything is also usable for the simplest key value configuration.
 
 
 
-A word about human readable configuration
-=========================================
+Human readable configuration
+============================
 
-First everyone should know, if a configuration format will be used by humans
+First everyone should know, if a configuration is directly used by humans
 it is a user interface and should be threated so.
 Second, keep it as simple as possible.
 
@@ -68,11 +68,11 @@ For me the requirements are:
 1. It must be simple, have not that much time to learn another new configuration
 format.
 2. I (a human) have to read and write stuff in this format. So it should be
-based on text I can read and write with a simple editor.
+based on text I can read and write with a simple text editor.
 3. It should allow me to customize some parts of a program or application. I
 don't want to change source code for it nor I want to write program logic in the
 configuration.
-4. If possible, have the configuration for my application in one place, best is
+4. If possible, have the configuration for my applications in one place, best is
 to have it in one file. So I don't have to search through the file system.
 
 All this is not very specific and your needs may be more detailed and you have
@@ -87,12 +87,35 @@ and fulfills all my needs. And yes all needs for a good human readable
 configuration format. But there is only one problem. It is not specified in
 detail. The key value separator varies and other things like comments. Even
 nuances about word case. To be interchangeable this has to be specified.
-This module tries nothing more than this it specifies the format in more detail
+This module tries to specifies the format in more detail
 and provides a parser for it in Python.
 
 
+Features
+--------
+
+- Already known by most people. INI Style format is there for years.
+- Simple key value string only. (at user level)
+- Extends only the value part to support more advanced needs.
+- Reduced to have only one preferable way to write something.
+  In this case use the most widely used characters (= to assign, # to comment)
+- Keys are case insensitive, so forgive the user if he/she did not know the
+  exact spelling
+- Flat structure, only one level. (no sections in sections)
+- Allow complex stuff but only if needed. Start simple but can scale.
+- The programmer decides how complex a value is and how to parse a value
+  for the user it is still a simple string.
+- The user must only know sections, comments, keys, values and multi line values.
+  Nothing more is needed to get the configuration syntax right.
+- Substitution is supported by the "${KEY}" interpolation format.
+
+Ultimate goal: Become the standard way for Python applications to configure
+something and be the one interchangeable user readable configuration format.
+So everyone knows it and uses it. Don't rule the world only a title part of it.
+
+
 Why do I care about a configuration format?
-===========================================
+-------------------------------------------
 
 Valid question, simple by my own use case and needs and because I am a little
 tiered to learn the next new better format with advanced features.
@@ -102,6 +125,76 @@ human usable. I added friendly because this is essential for me. Forgive the
 users also some errors they are not perfect and I am a user too.
 Define a format usable for a lot of stuff. But not to complex and yet powerful.
 Hopefully everyone loves it and then uses it.
+
+Some words about other know formats:
+
+TOML - Also useful solves more complex problems. But no final specification
+       and tries to solve problems to complex for most users.
+       Supports nested mappings and lists in a way like a programmer will do it
+       but not as a user will like it. Don't burden the user of the
+       configuration with your preferred result structure. If the configuration
+       format supports deeply nested configuration syntax. Someone will use it
+       and then it is no longer easy for the user. The syntax is one step to
+       complex to be easy and user friendly.
+
+YAML - Initially looks nice and the real solution for every configuration need.
+       But at the end, it is complex and there are to many ways to specify
+       something. Also parsers are not easy to implement in a correct way for
+       it. The user gets the load of the structure the programmer wants.
+       It is not forgiving to user errors and does not avoid complex structures
+       hence not that user friendly at the end. It is only good if your
+       configuration is simple but in this case also has a more complex syntax.
+       Everytime I have to write YAML configuration, first I must consult the
+       manual of the package and the YAML specification to do it right.
+       The syntax is twos steps to complex to be easy and user friendly.
+
+JSON - Good interchangeable serialization format but not so good for
+       configuration. Allows no comments. Syntax is to complex and error prone
+       for simple configuration needs. To use it as a configuration syntax it
+       must be extended and you create your own new format no longer compatible
+       with bare JSON.
+       But can be usable to specify complex values. It is widely know and the
+       basic syntax is easy. Good parser support for a lot of languages.
+
+XML - Verbose and the user must know how to program. Open close tags needed,
+      other stuff only in attributes. Allows deep and complex structures by
+      nesting. In the end it is not easy and most of the time not really human
+      readable. Avoid XML as user interface if you can. It may be the solution
+      for other problems but not for configuration.
+
+
+At the end, I have really tried a lot of formats and used them. Also written my
+own. Learned a lot over time. Came to the conclusion: Keep your configuration
+as simple as possible. This implies also, don't write the configuration only
+for your needs write it for none programmer users in mind. Avoid deep nested
+structures and don't require knowledge from your users about dictionaries or
+lists and nested structures. Also not about how to format integer or strings
+in the syntax. Really, keep it simple. Every format listed above avoids this
+in one or another way.
+
+
+My configuration history (in short)
+-----------------------------------
+
+In the past 20 years I had to work with a lot of configuration formats.
+The worst human readable ever was XML. Some years ago with the XML hype arising
+my first choice was also to do new configuration in XML. But XML is not good for
+human readable configuration stuff. Also not as a script like language. It
+may be a good data exchange format but solves not every problem on earth.
+And really solves nothing in the are like configuration and scripting.
+Good luck, I invented never a big enough XML configuration format only had to
+use some. One of my first configuration style formats I had to use was the
+INI style based format. Most used on Windows years ago even before the registry
+arises. I used a lot of formats starting from the Apache style config due to the
+Zope xml style config and nearly everything between. Have written some parsers
+for own invented config formats and also tried to invent the next best format
+capable to handle a lot of use cases.
+But for all of this I have noticed the really first one is still one of the best.
+Why? It is simple. The simplest configuration format nearly every one understood
+from the beginning is something like you have a key and it has a value.
+The INI style adds to this only something like sections. Which allows to have
+different configurations in one file. At the end of my configuration history I
+am back to the beginning. Simple key value with a bonus.
 
 
 The specification
@@ -119,20 +212,20 @@ All Unicode, if a file it must be UTF-8 encoded.
 
 That is all you must know to write and read configuration files in the specified
 format. But I will go into detail with examples for more parts of the specification.
+You can also call it a defined variant of an INI style configuration format.
 
 The configparser module in Python 3 is really good, it can and will be used to
 parse the specified "standard" format here. Also I explain my decisions for
 a choice in detail.
 
 First we must limit the possibilities. Most INI style formats allow more than
-one way to do something. But the standard format here is there to limit some
-boarders not to do everything possible.
+one way to do something. But the standard format here limits this to one way.
 
 
 Comments
 --------
 
-Are line bases start simple by "#" character. Inline comments are not allowed.
+Are line based start simple by "#" character. Inline comments are not allowed.
 This is to prevent errors in a value where the character "#" also can be present.
 Spaces in front of "#" are allowed so indention of comments is possible.
 
@@ -148,6 +241,19 @@ Spaces in front of "#" are allowed so indention of comments is possible.
     key = value; also not a valid comment
 
 
+The ";" character as an additional comment character is not allowed. Also in
+some variants the ";" is used for inline comments. To prevent errors and provide
+only one way this is not allowed. This opens also the possibility to use ";" as
+a path separator for values.
+
+Keep in mind comment lines are handled by the parser and remove before you get
+the value out of the parser. This is also the case for multi line values where
+every line starting with "#" will be removed.
+This allows to have comment lines in every format of multi line values.
+Even if you decide you parse the value as JSON or another fancy not yet invented
+format.
+
+
 Sections
 --------
 
@@ -155,7 +261,8 @@ Are there to separate different parts of your configuration. Also to have
 configuration of different programs in the same file.
 
 A section starts with a "[" and ends with a "]" all between is part of the
-section name. As with comments sections can be indented but try to avoid this.
+section name (case sensitive). As with comments sections can be indented but
+try to avoid this.
 It implies a structure and this structure is not there when parsed.
 Also avoid ":" in the section name. Later on this for interpolation.
 
@@ -171,7 +278,7 @@ Section name = Program name.
 You have an application library "myfantastic" with a configuration need. Not
 very complicated only needs some key value settings.
 Use the section name "myfantastic" (good is to use the same name as your Python
-package) and place your whole configuration in this section.
+package or module name) and place the whole configuration in this section.
 
 .. code-block:: ini
 
@@ -180,7 +287,7 @@ package) and place your whole configuration in this section.
     loglevel = debug
 
     [anothermodule]
-    bird=fly
+    bird = fly
 
 This allows having configuration for other libraries, applications in the same
 file. Your module is only interested in your section.
@@ -197,7 +304,7 @@ Example:
 .. code-block:: ini
 
     [mymodule]
-    environmentlist = py27, py34, py35
+    environmentlist = py27,py34,py35
 
     [mymodule py27]
     path = /py27
@@ -219,6 +326,32 @@ sections and filter out every section starting with "mymodule ". (space at the e
 If the space is not yours. Consider using the "." as an alternative separator.
 But keep your module/package name in front.
 All this avoids also clashes with section names of other modules/packages.
+
+If you have a complex package with different levels of configuration needs
+another solution is to use the full module name as configuration structure
+in sections.
+
+Example:
+
+.. code-block:: ini
+
+    [myxml.parser]
+    validate = true
+
+    [myxml.writer]
+    prettyformat = true
+
+    [myxml.logger]
+    level = debug
+
+
+This is really seldom needed best is still to have all in one section with
+good documented keys. But if your modules are really independent and have their
+own configuration this is also a possible way to separate stuff and avoid name
+collisions. You can still find every section for myxml by filtering them by
+"myxml.". In this case the amount of configuration sections is defined by your
+installed modules. A good indicator for such a use case is if "myxml" is a
+namespace package.
 
 
 Keys
@@ -265,9 +398,10 @@ But to start simple:
 All values are valid. If you simple get them in your application they are all
 strings. It is up to the application using the configuration parser what to
 get out of them. But more about this later.
-It is allowed to have values over multiple lines. They value is still a simple
+It is allowed to have values over multiple lines. The value is still a simple
 string for the user and the interpretation is up to you. Multiline values must
 be indented to distinguish them from a key and make them part of the value.
+
 Example:
 
 .. code-block:: ini
@@ -300,6 +434,10 @@ they have only to be indented. This can be very useful to list something
 or only to have a bigger string. But all this is up to the application.
 But the StdConfigParser will help you in this area. More about it later.
 
+For multi line values keep in mind they must be indented, use same indent level
+for every line. The indention is cleaned up by the parser for you. You get still
+one big string.
+
 
 Default section
 ---------------
@@ -312,35 +450,45 @@ Can look ugly, but most of the time you don't need this section. And if needed
 by a user it is really visible and good named.
 Why should I avoid to use it?
 
-Because most of the time if the application uses good default values and
+Because the application should uses good default values and
 uses the defaults parameter of the parser there is no need to have them also
 in the file. The need to have them because of interpolation is also lowered.
 We can specify the section explicitly.
 
 For all of this, keep in mind, there can be a special section in a file called
-"DEFAULTS". If you seed it remember my words about it.
+"DEFAULTS". If you see it remember my words about it.
+If you use the write method of the parser you will also see these defaults.
 
 
 
 Interpolation
 -------------
 
-Only mentioned before but not described in detail. Avoid it to mention it
-till know. Because it can be so useful but makes also everything more complicated.
+Only mentioned before but not described in detail.
 I self thought long about it, should it be part of the StdConfigParser or not.
 For me the conclusion was, it is useful for the end user and can help him/her
 a lot. But if not needed in the configuration to have it will not disturb.
+The user decides to use it. And because most users are lazy like me and don't
+want to change the same value at 1000 places they will use it. It is also
+super elegant solution to provide and describe default values.
+
 One possible way is to have an option at the parser for it. But I want to
 have one standard way and not two ways. So I decided it is there.
-After this the decision for the format was really easy. We use simple the
-extended interpolation format of Python.
-Interpolation for the configuration is simple a replace this by that at access
+After this the decision for the format was really easy. We use simply the
+extended interpolation format of Python configparser module.
+Interpolation for the configuration is simple a replace "this by that" at access
 time. It is not like a template at parsing time. Really when you access the
 key the replacement is done every time again when you access the key. No cache
-you are up to date for changes in other places.
+you are up to date for changes in other places. Don't care about performance
+it is not the problem at configuration level. Here we care about most up to date
+and good usable defaults. Even if someone changes something at another level.
+This is a feature you will later as a user and programmer learn to love and
+understand the full power of it.
+Lot of other configuration solution do this wrong and prefer performance over
+up to date values, which is not what a user want.
 
-Enough text, the format is simple: ${key} to insert the value of the key
-when accessing. Or over sections: ${section:key}
+Enough text, the format is simple: ``${key}`` to insert the value of the key
+when accessing. Or over sections: ``${section:key}``
 
 .. code-block:: ini
 
@@ -358,6 +506,12 @@ Interpolation can simplify the live for the user by having to specify the
 value in one place and use it also in another place.
 It can also simplify the application developers live by using it for good
 default values.
+Because of the ":" as separator between section and key, avoid the ":" in
+sections. If your section uses ":" in the name it cannot be used in complex
+interpolations. It is still not an error. Because if you decide to not
+interpolate something or interpolate only at application level. All is still
+fine.
+To use the ``$`` sign escape it with another one and use ``$$``.
 
 
 Interface
@@ -503,14 +657,15 @@ Advanced value syntax
 Sometimes, hopefully never, you have the need for more complex configuration
 structure. If you cannot avoid it and you really need something like a deeper
 structure or you have demand of types in your value lists I have also a solution
-for it. The solution is json. Why? What?
+for it. The solution is JSON. Why? What?
 Yes in this complex case I don't reinvent the wheel. Most users for a
 Python application are already familiar to the Python syntax and JSON is nearly
-similar. It is documented
-and easy to write.
+similar. It is documented and easy to read/write.
 But you may ask, I want to comment complex stuff. The answer is, yes you can.
 Comments are handled by the ConfigParser in a normal way. Only line comments are
 allowed. Also empty lines. But value indent must also be kept for JSON values.
+Even if you use JSON values keep in mind the value is handled as multi line
+string by the parser before you get it.
 I considered also providing ast.literal_eval(). But after first test, removed it
 in favor of using JSON. There is one simple problem with literal_eval, if you
 have a demand for Python 2 you will be in the bytes, str, unicode hell of it.
@@ -553,29 +708,107 @@ needed. You have the power but your users must be able to handle it.
 Not complicated enough? Even the interpolation in the last line works as expected.
 Keep in mind the interpolation is still a simple string interpolation on access
 before the converter is called. The result of the interpolation must be valid
-Json.
+JSON.
+
+
+Style guide
+===========
+
+Yes it makes sense to have also a style guide for configuration. The format
+allows some stuff and not everything is an error but considered bad style.
+
+
+Sections
+--------
+
+White space before and after the section name are allowed but everything between
+the "[" and "]" is the section name. So don't use spaces before or after the
+section name. Also the name is case sensitive, to keep it simple use only lower
+case letters for the name.
+
+Sections can be indented but avoid this. Even if you do something like
+partitioning of the section name. Keep it flat.
+
+Example:
+
+.. code-block:: INI
+
+    # good style
+    [mymodulename]
+
+    # bad style
+    [  mymodule  ]
+
+        [mymodule]
+
+
+Keys and values
+---------------
+
+Use a space before the "=" and after it. You cannot prevent your users from
+doing different things but for best practice in documentation and for your
+default configuration use this style.
+
+Example:
+
+.. code-block:: INI
+
+    # good style
+    [mymodule]
+    key = value
+
+    # bad style
+    keybad1=value
+      keybad2 = value
+      keybad3=value
+
+
+Indention
+---------
+
+Is usefull for values to have them over multiple lines. Try to use it only in
+this case. Try to use the same indention level. Preferred are four spaces.
+Same as the Python standard. Don't indent sections. Don't use multiple levels
+of indention. Keep it simple for your user. Everytime something is indented it
+should be a sing for a multiline value, nothing more.
+Only if you use complex value format like JSON, it makes sens to use additional
+indention. But in this case it should be only for visibility.
+
+Example:
+
+.. code-block:: INI
+
+    # good style
+    [mymodule]
+    key = value over
+        multiple
+        lines
+
+    another =
+        multi
+        line
+        value
+
+    # bad style
+    keybad1 = value over
+      multiple
+        lines
+
+      keybad2 = value
+        multi
+        line
+
+    keybad3 =
+        value
+           more value
+              more value
 
 
 
-My configuration history (in short)
-===================================
+Examples
+========
 
-In the past 20 years I had to work with a lot of configuration formats.
-The worst human readable ever was XML. Some years ago with the XML hype arising
-my first choice was also to do new configuration in XML. But XML is not good for
-human readable configuration stuff. Also not as a script like language. It
-may be a good data exchange format but solves not every problem on earth.
-And really solves nothing in the are like configuration and scripting.
-Good luck, I invented never a big enough XML configuration format only had to
-use some. One of my first configuration style formats I had to use was the
-INI style based format. Most used on Windows years ago even before the registry
-arises. I used a lot of formats starting from the Apache style config due to the
-Zope xml style config and nearly everything between. Have written some parsers
-for own invented config formats and also tried to invent the next best format
-capable to handle a lot of use cases.
-But for all of this I have noticed the really first one is still one of the best.
-Why? It is simple. The simplest configuration format nearly every one understood
-from the beginning is something like you have a key and it has a value.
-The INI style adds to this only something like sections. Which allows to have
-different configurations in one file. At the end of my configuration history I
-am back to the beginning. Simple key value with a bonus.
+Examples describe a special use case and the solution how to handle
+this with the StdConfigParser.
+
+
