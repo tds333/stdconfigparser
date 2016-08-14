@@ -12,23 +12,25 @@ They allow really powerful configurations by keeping all simple for the user.
 
 An Example is better than a lot of words:
 
-[section]
-key = value
+.. code-block:: ini
 
-valuelist = multi line
-            values
-            # with comment
-            fetchable as list
+	[section]
+	key = value
 
-complex_value = {
-	"key 1": 1,
-	"key 2": 2,
-	# special list of environments
-	"env list": ["a", "b"],
-	}
+	valuelist = multi line
+	            values
+	            # with comment
+	            fetchable as list
 
-[other_section]
-name = ${section:key}
+	complex_value = {
+		"key 1": 1,
+		"key 2": 2,
+		# special list of environments
+		"env list": ["a", "b"],
+		}
+
+	[other_section]
+	name = ${section:key}
 
 
 As you can see a lot is possible with simple INI style syntax.
@@ -107,9 +109,11 @@ The specification
 
 In short:
 
-[section]
-# comment
-key = value
+.. code-block:: ini
+
+    [section]
+    # comment
+    key = value
 
 All Unicode, if a file it must be UTF-8 encoded.
 
@@ -132,14 +136,16 @@ Are line bases start simple by "#" character. Inline comments are not allowed.
 This is to prevent errors in a value where the character "#" also can be present.
 Spaces in front of "#" are allowed so indention of comments is possible.
 
-[section]
+.. code-block:: ini
 
-# this is a comment
-    # this is also a comment only indented
+    [section]
 
-key = value # not a valid comment
+    # this is a comment
+        # this is also a comment only indented
 
-key = value; also not a valid comment
+    key = value # not a valid comment
+
+    key = value; also not a valid comment
 
 
 Sections
@@ -153,9 +159,11 @@ section name. As with comments sections can be indented but try to avoid this.
 It implies a structure and this structure is not there when parsed.
 Also avoid ":" in the section name. Later on this for interpolation.
 
-[section]
+.. code-block:: ini
 
-[another_section]
+    [section]
+
+    [another_section]
 
 
 Best is to have some convention if you want to do something special with sections.
@@ -165,12 +173,14 @@ very complicated only needs some key value settings.
 Use the section name "myfantastic" (good is to use the same name as your Python
 package) and place your whole configuration in this section.
 
-[myfantastic]
-port = 1811
-loglevel = debug
+.. code-block:: ini
 
-[anothermodule]
-bird=fly
+    [myfantastic]
+    port = 1811
+    loglevel = debug
+
+    [anothermodule]
+    bird=fly
 
 This allows having configuration for other libraries, applications in the same
 file. Your module is only interested in your section.
@@ -184,17 +194,19 @@ and avoid the ":" in the section.
 
 Example:
 
-[mymodule]
-environmentlist = py27, py34, py35
+.. code-block:: ini
 
-[mymodule py27]
-path = /py27
+    [mymodule]
+    environmentlist = py27, py34, py35
 
-[mymodule py34]
-path = /py34
+    [mymodule py27]
+    path = /py27
 
-[mymodule py35]
-path = /py35
+    [mymodule py34]
+    path = /py34
+
+    [mymodule py35]
+    path = /py35
 
 
 Here the main module has a list of environments, each environment has it's own
@@ -221,10 +233,12 @@ there. Keys are essential so be forgiving there is the motto.
 I said start as position one in a line, the exact meaning is, ok indention is
 allowed also but if possible avoid it.
 
-[section]
-key = value
-AnotherKey = no good example because camel case but allowed
-anotherkey = same as "AnotherKey", but duplicates are not allowed
+.. code-block:: ini
+
+    [section]
+    key = value
+    AnotherKey = no good example because camel case but allowed
+    anotherkey = same as "AnotherKey", but duplicates are not allowed
 
 
 Values
@@ -239,12 +253,14 @@ do not use "$" if possible. So the user has not to care about it.
 That said, we will specify some standard enhancements here also.
 But to start simple:
 
-[section]
-key = value
-next_key = Value with spaces in the string
-integer = 1
-float = 1.5
-bool = true
+.. code-block:: ini
+
+    [section]
+    key = value
+    next_key = Value with spaces in the string
+    integer = 1
+    float = 1.5
+    bool = true
 
 All values are valid. If you simple get them in your application they are all
 strings. It is up to the application using the configuration parser what to
@@ -252,28 +268,32 @@ get out of them. But more about this later.
 It is allowed to have values over multiple lines. They value is still a simple
 string for the user and the interpretation is up to you. Multiline values must
 be indented to distinguish them from a key and make them part of the value.
+Example:
 
-[section]
-multiline = This value is over
-			multilple lines
-			and another one
+.. code-block:: ini
 
-[section2]
-multiline2 =
-	event this is
-	a
-	multiline
-	value
+    [section]
+    multiline = This value is over
+    			multilple lines
+    			and another one
 
-[section3]
-multiup =
-	comments are
-	allowed
-	# my comment
-	in the value
-	event
+    [section2]
+    multiline2 =
+    	event this is
+    	a
+    	multiline
+    	value
 
-	empty lines
+    [section3]
+    multiup =
+    	comments are
+    	allowed
+    	# my comment
+    	in the value
+    	event
+
+    	empty lines
+
 
 As you can see, the user has the possibility to write values over multiple lines
 they have only to be indented. This can be very useful to list something
@@ -322,13 +342,15 @@ you are up to date for changes in other places.
 Enough text, the format is simple: ${key} to insert the value of the key
 when accessing. Or over sections: ${section:key}
 
-[myapp]
-path = /user
-log_path = ${path}
+.. code-block:: ini
 
-[otherapp]
-path = ${myapp:path}/other
-dollarsign = $$
+    [myapp]
+    path = /user
+    log_path = ${path}
+
+    [otherapp]
+    path = ${myapp:path}/other
+    dollarsign = $$
 
 
 
@@ -445,19 +467,21 @@ A simple helping converting allowing a easy multi line value syntax.
 
 Example:
 
-[section]
-multiline = value 1
-            value 2
-            value 3
-            # comment for four
-            value 4
+.. code-block:: ini
 
-            value 5
+    [section]
+    multiline = value 1
+                value 2
+                value 3
+                # comment for four
+                value 4
 
-simple_indent_multi_is_enough =
-	line 1
-	line 2
-	line 3
+                value 5
+
+    simple_indent_multi_is_enough =
+    	line 1
+    	line 2
+    	line 3
 
 
 As you can see, simple valid multi line syntax. Easy for the user to see this
@@ -496,21 +520,23 @@ Python 2 and Python 3. And the configuration should be all unicode strings.
 
 Example:
 
-[section]
-key = ["some value in a list"]
+.. code-block:: ini
 
-object = {"data": "in a dict", "x": 10}
+    [section]
+    key = ["some value in a list"]
 
-now_it_gets_complex = {
-	"key": "value",
-	# with comment
-	"feature": "over multiple",
+    object = {"data": "in a dict", "x": 10}
 
-	"lines": 7,
-	"5": ["in", "a", "list", true, null, 3.14]
-	}
+    now_it_gets_complex = {
+    	"key": "value",
+    	# with comment
+    	"feature": "over multiple",
 
-event_interpolated = [${object}, {}, "it works"]
+    	"lines": 7,
+    	"5": ["in", "a", "list", true, null, 3.14]
+    	}
+
+    event_interpolated = [${object}, {}, "it works"]
 
 
 
