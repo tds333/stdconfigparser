@@ -6,6 +6,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import pytest
+
 from stdconfigparser import StdConfigParser
 
 
@@ -64,6 +66,27 @@ def test_getjson():
     assert sec.getjson("string") == "xyz"
     assert sec.getjson("number") == 10000000
     assert sec.getjson("float") == 3.14
+
+
+def test_conv_error():
+    parser = StdConfigParser()
+    test = """
+    [test]
+    int = 100
+    bool = true
+    string = bla
+    float = 3.14
+    """
+    parser.read_string(test)
+    sec = parser["test"]
+    assert sec.getint("int") == 100
+    with pytest.raises(ValueError):
+        assert sec.getint("string")
+    with pytest.raises(ValueError):
+        assert sec.getfloat("string")
+    with pytest.raises(ValueError):
+        assert sec.getboolean("string")
+
 
 
 def test_complex():

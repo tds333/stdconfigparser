@@ -1476,8 +1476,9 @@ class StdConfigParser(ConfigParser):
         try:
           return super(StdConfigParser, self)._get_conv(section, option, conv, **kwargs)
         except Exception as ex:
-            ex.args = ("Error getting section %r, option %r with converter %r."
-                       "\n%s" % (section, option, conv, ex.args))
+            ex.args += ("This error occured by getting option %r in section %r"
+                        " with converter %r." % (option, section, conv.__name__), )
+            raise
 
 # If someone looks at this implementation,
 # yes the ConfigParser of Python 3 is very powerful, used with good defaults
