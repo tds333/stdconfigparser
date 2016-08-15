@@ -46,6 +46,9 @@ to vendor and distribute it as private part of your application.
 If you don't need the extra power of the converters, keep in mind they are
 optional, everything is also usable for the simplest key value configuration.
 
+`Documentation <http://stdconfigparser.readthedocs.org/>`_
+
+`Source code <https://github.com/tds333/stdconfigparser>`_
 
 
 Human readable configuration
