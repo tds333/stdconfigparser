@@ -88,7 +88,6 @@ def test_conv_error():
         assert sec.getboolean("string")
 
 
-
 def test_complex():
     example = """
 [mysection]
