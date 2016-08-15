@@ -3,7 +3,8 @@
 
 ## For version 1.0
 
-- [ ] Basic documentation with sphinx
+- [X] Basic documentation with sphinx
+- [X] Integrate documentation build into readthedocs.org
 - [ ] Unit tests
 - [ ] Use flake8 for code checks
 - [ ] Test against Python 2.7 and 3.5

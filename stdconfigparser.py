@@ -1440,6 +1440,7 @@ else:
     from configparser import *
     from collections import OrderedDict
 
+# implementation for Python 3 and Python 2.7
 
 def _convert_lines(value):
     """Split string value into lines and return this list without empty lines."""
@@ -1470,110 +1471,15 @@ class StdConfigParser(ConfigParser):
         encoding = "utf-8" if encoding is None else encoding
         super(StdConfigParser, self).read(filenames, encoding)
 
-# if someone looks at this implementation
+
+    def _get_conv(self, section, option, conv, **kwargs):
+        try:
+          return super(StdConfigParser, self)._get_conv(section, option, conv, **kwargs)
+        except Exception as ex:
+            ex.args = ("Error getting section %r, option %r with converter %r."
+                       "\n%s" % (section, option, conv, ex.args))
+
+# If someone looks at this implementation,
 # yes the ConfigParser of Python 3 is very powerful, used with good defaults
 # and some useful converters you get a widely usable and powerful configuration
-# parsing class
-
-
-def test_config():
-  example = """
-[mysection]
-a = b
-list = [1,
-  # second
-  2,4,
-  "last",
-  # empty line
-
-  true,
-  null,
-  [1,2]
-  , {"1":2}
-  , "${int}"
-  , "${name}"
-  , "$${name}"
-  ]
-dict = {"a": 1, "b": 2}
-multiline = first value
-  some_text
-  more_than_one_line
-
-    and somethind with spaces
-  # comment
-       space end    \
-
-  ${int}
-  ${section2:name2}
-  end
-
-int = 1
-float = 1.555
-name = My troublesome name
-
-[section2]
-name2 = ${mysection:name}
-
-[sec.one]
-name = bla
-[sec.two]
-name = ${sec.one:name}
-
-[my one]
-name=one
-[my two]
-name=two
-[my t3]
-[my t4]
-[my t5]
-[my t6]
-name=${my one:name}
-
-[json]
-list = [1,2,3]
-object = {"a": "myval", "b": "otherval"}
-with_comment = [1, "200",
-    # comment
-
-    "400", true, false, null, 3.14,
-    {"another": 5,
-     "second": "bla"}]
-not_invalid =
-  ["a", "b"]
-"""
-  #parser = StdConfigParser(interpolate=False)
-  parser = StdConfigParser()
-  parser.read_string(example)
-  print(parser.get("mysection", "name"))
-  print(parser.get("section2", "name2"))
-  print(parser.getjson("mysection", "dict"))
-  print("----")
-  print(parser.get("mysection", "list"))
-  print(parser.getjson("mysection", "list"))
-  print("----")
-  print(parser.getlines("mysection", "multiline"))
-  print(parser.get("mysection", "multiline"))
-  print(parser.get("sec.two", "name"))
-  print(parser.get("my two", "name"))
-  print(parser.get("my t6", "name"))
-  print(parser.getjson("json", "list"))
-  print(parser.getjson("json", "object"))
-  print(parser.getjson("json", "with_comment"))
-  print(parser.getjson("json", "not_invalid"))
-  print(parser.getjson("json", "invalid", fallback="not found"))
-  print("----")
-  for section in parser.sections():
-    print(section)
-
-  print([section.split()[1] for section in parser if section.startswith("my ")])
-
-def test_defaults():
-    parser = StdConfigParser(defaults={"a":"b"})
-    parser.write(sys.stdout)
-
-def main():
-  test_config()
-  test_defaults()
-
-if __name__ == '__main__':
-  main()
+# parsing class with only these lines of code.
