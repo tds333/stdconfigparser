@@ -20,9 +20,9 @@
 # SOFTWARE.
 
 """
-This module provides a StdConfigParser class a simple
+This module provides the StdConfigParser class. A simple
 standard INI configuration parser with a specified format. All is based
-on the Python standard library configuration parser.
+on the Python standard library configparser.
 For Python 2.7 it contains backported classes from Python 3 configparser module.
 
 The StdConfigParser includes also additional converter methods.
@@ -39,7 +39,7 @@ from __future__ import unicode_literals
 import sys
 import json
 
-__version__ = "0.2"
+__version__ = "0.3"
 
 __all__ = ["NoSectionError", "DuplicateOptionError", "DuplicateSectionError",
            "NoOptionError", "InterpolationError", "InterpolationDepthError",
@@ -1474,7 +1474,7 @@ class StdConfigParser(ConfigParser):
 
     def _get_conv(self, section, option, conv, **kwargs):
         try:
-          return super(StdConfigParser, self)._get_conv(section, option, conv, **kwargs)
+            return super(StdConfigParser, self)._get_conv(section, option, conv, **kwargs)
         except Exception as ex:
             ex.args += ("This error occured by getting option %r in section %r"
                         " with converter %r." % (option, section, conv.__name__), )
