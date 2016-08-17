@@ -369,12 +369,25 @@ there. Keys are essential so be forgiving there is the motto.
 I said start as position one in a line, the exact meaning is, ok indention is
 allowed also but if possible avoid it.
 
+
 .. code-block:: ini
 
     [section]
     key = value
+
     AnotherKey = no good example because camel case but allowed
-    anotherkey = same as "AnotherKey", but duplicates are not allowed
+
+    anotherkey = same as "AnotherKey", but duplicates are not allowed!
+
+    long_key_with_different_words = Try to avoid but when needed use "_"
+
+
+Try to keep your keys lowercase if needed use the "_" as separator for words
+for better readability.
+If you have the seldom need to have a structure in your keys you can use
+"/" between the words. With this you can build a tree like structure.
+All this is only a convention a key still is a simple string. It is up to
+the application to implement and document it.
 
 
 Values
@@ -405,7 +418,8 @@ It is allowed to have values over multiple lines. The value is still a simple
 string for the user and the interpretation is up to you. Multiline values must
 be indented to distinguish them from a key and make them part of the value.
 
-Example:
+.. Example:
+
 
 .. code-block:: ini
 
@@ -674,6 +688,15 @@ in favor of using JSON. There is one simple problem with literal_eval, if you
 have a demand for Python 2 you will be in the bytes, str, unicode hell of it.
 In this case it is really not easy to write configuration code working with
 Python 2 and Python 3. And the configuration should be all unicode strings.
+Also literal_eval is tied to Python is parses a limited syntax of Python.
+But Python has multiple ways to specify a string. There is not one way like this
+is in JSON. Also it supports more than we need in configuration file like tuple.
+For Python 3 sets are also supported. So for Python 2 and Python 3 we have
+different allowed values. All this is not the case for JSON. The only feature
+we want to have not part of JSON are comments. But in this case they are
+handled by the config parser before JSON comes into the game.
+The requirement to have the whole multi line JSON value indented is not a
+problem. It is a feature to improve readability.
 
 
 Example:
@@ -701,7 +724,7 @@ Example:
 As you can see, these are still valid string values but if you use
 the "getjson" method of the parser, the value will be parsed for you
 and you get back the Python values. Comments are allowed, empty lines also
-as know by multi line configuration values. The user has the possibility
+as known by multi line configuration values. The user has the possibility
 to write it in a readable way. The application let Python parse the syntax in
 a safe way. This is really powerful. You can do nearly all complex configuration
 needs with it. Even to complex for the users. Keep this in mind.
@@ -712,6 +735,9 @@ Not complicated enough? Even the interpolation in the last line works as expecte
 Keep in mind the interpolation is still a simple string interpolation on access
 before the converter is called. The result of the interpolation must be valid
 JSON.
+
+All this magic is nothing more than a helper provided for StdConfigParser
+users. It is the same as getting the string and than using json.loads().
 
 
 Style guide
@@ -862,6 +888,112 @@ List of values
 Multiple sections
 -----------------
 
+You need a little bit more structure in the configuration and you want
+to configure reoccurring stuff like a list of environments with same
+options in them.
+You have your main configuration in a section and for every environment also
+a section. The environment section is prefixed with the main section name.
+Your users are free to add more environment sections if needed.
+In the main section there is a list with the active environments.
+
+.. code-block:: INI
+
+    [mymodule]
+    environments =
+        py33
+        py35
+        py27
+
+    [mymodule py33]
+    path = py33
+
+    [mymodule py34]
+    path = py34
+
+    [mymodule py35]
+    path = py35
+
+    [mymodule py27]
+    path = py27
+
+
+In your program code get the environment list and use it directly or get
+the sections and check if they are active. Most is up to the application to
+handle this only the getlines() helper method of StdConfigParser is used.
+
+.. code-block:: Python
+
+    from stdconfigparser import StdConfigParser
+
+    def get_config(path):
+        config = StdConfigParser()
+        config.read(path)
+        return config
+
+    def main():
+        config = get_config("./mymodule.cfg")
+        envprefix = "mymodule "
+
+        # first solution by iterating the environments value
+        environments = config.getlines("mymodule", "environments")
+        for environment in environments:
+            path = config.get(envprefix + environment, "path")
+            # you get only the specified without py34 path
+
+        # second solution by simply iterating the available environments
+        env_sections = [v for v in config.sections() if v.startswith(envprefix)]
+        for section in env_sections:
+            path = config.get(section, "path")
+            # you get the path for all in config also py34 path
+
+
+Multiple sections namespace package
+-----------------------------------
+
+You have a main applications which uses a namespace package to handle
+your plugins.
+In this case it is good to have a section for every module of your namespace
+package. Can still by useful to have one main configuration key using the same
+name as your namespace. Because it is natural for packages to use the "."
+separator it is also use for the section. So the name of the section already
+matches the full module name.
+
+.. code-block:: INI
+
+    [namespace]
+    base_path = .
+
+    [namespace.mod1]
+    max_number = 100
+
+    [namespace.mod2]
+    fast_processing = true
+
+    [namespace.mod3]
+    deep = false
+
+
+In the program code every module can access his own configuration section.
+The main application can also list all modules of the namespace.
+
+.. code-block:: Python
+
+    from stdconfigparser import StdConfigParser
+
+    def get_config(path):
+        config = StdConfigParser()
+        config.read(path)
+        return config
+
+    def main():
+        config = get_config("./namespace.cfg")
+        namespace = "namespace"
+        namespace_prefix = namespace + "."
+
+        submodules = [v[len(namespace_prefix) for v in config.sections()
+                      if v.startswith(namespace_prefix)]
+
+
 Interpolation and defaults
 --------------------------
 
@@ -937,12 +1069,22 @@ overwriting in the configuration file. Can be used as a feature for testing.
         config = get_config("~/mymodule.cfg")
         project_dir = config.get("project_dir")
 
+For environment information keep in mind it can bring in a can of worms for
+your application. Better is to only provide a defined set of variables
+as defaults for the configuration.
+
 
 Complex
 -------
 
 Your users are mainly programmers and already familiar with JSON.
 You cannot resist and want to provide powerful features at configuration level.
+All this is fine for JSON syntax only keep in mind the configuration parsing
+rules apply first. The value indent must be correct even if JSON normally allows
+a more syntax formats.
+
+Before you do this, please think some minutes if you really need this feature.
+Don't overuse it.
 
 
 Config file includes
