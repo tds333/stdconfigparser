@@ -46,7 +46,7 @@ __all__ = ["NoSectionError", "DuplicateOptionError", "DuplicateSectionError",
            "InterpolationMissingOptionError", "InterpolationSyntaxError",
            "ParsingError", "MissingSectionHeaderError",
            "ConfigParser", "SafeConfigParser", "RawConfigParser",
-           "Interpolation", "BasicInterpolation",  "ExtendedInterpolation",
+           "Interpolation", "BasicInterpolation", "ExtendedInterpolation",
            "LegacyInterpolation", "SectionProxy", "ConverterMapping",
            "DEFAULTSECT", "MAX_INTERPOLATION_DEPTH"]
 
@@ -480,7 +480,7 @@ if PY2:
                     m = self._KEYCRE.match(rest)
                     if m is None:
                         raise InterpolationSyntaxError(option, section,
-                            "bad interpolation variable reference %r" % rest)
+                              "bad interpolation variable reference %r" % rest)
                     var = parser.optionxform(m.group(1))
                     rest = rest[m.end():]
                     try:
@@ -541,7 +541,7 @@ if PY2:
                     m = self._KEYCRE.match(rest)
                     if m is None:
                         raise InterpolationSyntaxError(option, section,
-                            "bad interpolation variable reference %r" % rest)
+                              "bad interpolation variable reference %r" % rest)
                     path = m.group(1).split(':')
                     rest = rest[m.end():]
                     sect = section
@@ -691,7 +691,7 @@ if PY2:
             self._strict = strict
             self._allow_no_value = allow_no_value
             self._empty_lines_in_values = empty_lines_in_values
-            self.default_section=default_section
+            self.default_section = default_section
             self._interpolation = interpolation
             if self._interpolation is _UNSET:
                 self._interpolation = self._DEFAULT_INTERPOLATION
@@ -926,7 +926,7 @@ if PY2:
                 for key, value in vars.items():
                     d[self.optionxform(key)] = value
             value_getter = lambda option: self._interpolation.before_get(self,
-                section, option, d[option], d)
+                                          section, option, d[option], d)
             if raw:
                 value_getter = lambda option: d[option]
             return [(option, value_getter(option)) for option in d.keys()]
@@ -987,7 +987,7 @@ if PY2:
                 d = self._delimiters[0]
             if self._defaults:
                 self._write_section(fp, self.default_section,
-                                        self._defaults.items(), d)
+                                    self._defaults.items(), d)
             for section in self._sections:
                 self._write_section(fp, section,
                                     self._sections[section].items(), d)
@@ -1094,11 +1094,11 @@ if PY2:
                 while comment_start == sys.maxsize and inline_prefixes:
                     next_prefixes = {}
                     for prefix, index in inline_prefixes.items():
-                        index = line.find(prefix, index+1)
+                        index = line.find(prefix, index + 1)
                         if index == -1:
                             continue
                         next_prefixes[prefix] = index
-                        if index == 0 or (index > 0 and line[index-1].isspace()):
+                        if index == 0 or (index > 0 and line[index - 1].isspace()):
                             comment_start = min(comment_start, index)
                     inline_prefixes = next_prefixes
                 # strip full line comments
@@ -1114,9 +1114,9 @@ if PY2:
                         # add empty line to the value, but only if there was no
                         # comment on the line
                         if (comment_start is None and
-                            cursect is not None and
-                            optname and
-                            cursect[optname] is not None):
+                                cursect is not None and
+                                optname and
+                                cursect[optname] is not None):
                             cursect[optname].append('') # newlines added at join
                     else:
                         # empty line marks end of value
@@ -1126,7 +1126,7 @@ if PY2:
                 first_nonspace = self.NONSPACECRE.search(line)
                 cur_indent_level = first_nonspace.start() if first_nonspace else 0
                 if (cursect is not None and optname and
-                    cur_indent_level > indent_level):
+                        cur_indent_level > indent_level):
                     cursect[optname].append(value)
                 # a section header or option header?
                 else:
@@ -1162,7 +1162,7 @@ if PY2:
                                 e = self._handle_error(e, fpname, lineno, line)
                             optname = self.optionxform(optname.rstrip())
                             if (self._strict and
-                                (sectname, optname) in elements_added):
+                                    (sectname, optname) in elements_added):
                                 raise DuplicateOptionError(sectname, optname,
                                                            fpname, lineno)
                             elements_added.add((sectname, optname))
@@ -1440,7 +1440,9 @@ else:
     from configparser import *
     from collections import OrderedDict
 
+
 # implementation for Python 3 and Python 2.7
+
 
 def _convert_lines(value):
     """Split string value into lines and return this list without empty lines."""
