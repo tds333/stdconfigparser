@@ -363,9 +363,10 @@ Keys
 Keys start at position one in a line and are all lower case. That said, it is
 good to write them lower case in the configuration file because they will be
 lowered lated by the configuration parser. In your application you also will
-access them in lower case. For your user, the are case insensitive. This avoids
+access them in lower case. For your user, they are case insensitive. This avoids
 confusion about should I use camel case for this key or must I use a big letter
 there. Keys are essential so be forgiving there is the motto.
+Also it is good to keep the allowed key names in the ASCII range.
 I said start as position one in a line, the exact meaning is, ok indention is
 allowed also but if possible avoid it.
 
@@ -795,11 +796,11 @@ Example:
 Indention
 ---------
 
-Is usefull for values to have them over multiple lines. Try to use it only in
+Is useful for values to have them over multiple lines. Try to use it only in
 this case. Try to use the same indention level. Preferred are four spaces.
 Same as the Python standard. Don't indent sections. Don't use multiple levels
 of indention. Keep it simple for your user. Everytime something is indented it
-should be a sing for a multiline value, nothing more.
+should be a string for a multiline value, nothing more.
 Only if you use complex value format like JSON, it makes sens to use additional
 indention. But in this case it should be only for visibility.
 
@@ -934,17 +935,13 @@ handle this only the getlines() helper method of StdConfigParser is used.
         config = get_config("./mymodule.cfg")
         envprefix = "mymodule "
 
-        # first solution by iterating the environments value
         environments = config.getlines("mymodule", "environments")
         for environment in environments:
-            path = config.get(envprefix + environment, "path")
+            path = config.get(envprefix + environment, "path", fallback=".")
             # you get only the specified without py34 path
+            # it is also got to use fallback here if a environment is listed
+            # but no configuration value is provided
 
-        # second solution by simply iterating the available environments
-        env_sections = [v for v in config.sections() if v.startswith(envprefix)]
-        for section in env_sections:
-            path = config.get(section, "path")
-            # you get the path for all in config also py34 path
 
 
 Multiple sections namespace package
