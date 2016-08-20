@@ -39,7 +39,7 @@ from __future__ import unicode_literals
 import sys
 import json
 
-__version__ = "0.3"
+__version__ = "0.4"
 
 __all__ = ["NoSectionError", "DuplicateOptionError", "DuplicateSectionError",
            "NoOptionError", "InterpolationError", "InterpolationDepthError",

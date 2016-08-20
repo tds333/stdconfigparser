@@ -3,12 +3,12 @@ import sys
 import os
 from setuptools import setup
 
-#from stdconfigparser import __version__ as version
 
-versiondict = {}
-with open("stdconfigparser.py") as cfgparser:
-	exec(cfgparser.read(), versiondict)
-	version = versiondict["__version__"]
+basepath = os.path.dirname(__file__)
+with open(os.path.join(basepath, "stdconfigparser.py")) as cfgparser:
+    versiondict = {}
+    exec(cfgparser.read(), versiondict)
+    version = versiondict["__version__"]
 
 
 setup(name='StdConfigParser',
@@ -19,7 +19,8 @@ This is the Python configparser with an extra class StdConfigParser.
 
 Provides a standard configuration syntax and the parser for it.
 Also contains everything to be a backport of the ConfigParser from
-Python 3.5 in one module easy to vendor or install as extra dependency.
+Python 3.5 to Python 2.7.
+Everything in one module easy to vendor or install as extra dependency.
 """,
       classifiers=[
           'Development Status :: 4 - Beta',
