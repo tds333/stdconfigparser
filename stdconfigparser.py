@@ -39,7 +39,7 @@ from __future__ import unicode_literals
 import sys
 import json
 
-__version__ = "0.4"
+__version__ = "0.5"
 
 __all__ = ["NoSectionError", "DuplicateOptionError", "DuplicateSectionError",
            "NoOptionError", "InterpolationError", "InterpolationDepthError",
@@ -48,7 +48,8 @@ __all__ = ["NoSectionError", "DuplicateOptionError", "DuplicateSectionError",
            "ConfigParser", "SafeConfigParser", "RawConfigParser",
            "Interpolation", "BasicInterpolation", "ExtendedInterpolation",
            "LegacyInterpolation", "SectionProxy", "ConverterMapping",
-           "DEFAULTSECT", "MAX_INTERPOLATION_DEPTH"]
+           "DEFAULTSECT", "MAX_INTERPOLATION_DEPTH",
+           "StdConfigParser"]
 
 
 PY2 = sys.version_info[0] == 2
