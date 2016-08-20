@@ -26,7 +26,6 @@ Everything in one module easy to vendor or install as extra dependency.
           'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: MIT License',
-          'Topic :: Configuration',
           'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 3',
       ],
