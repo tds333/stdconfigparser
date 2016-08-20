@@ -48,6 +48,29 @@ def test_getlines_trim():
     assert len(lines) > 0
     assert ["value 1", "value 2"] == lines
 
+def test_getlisting():
+    parser = StdConfigParser()
+    test = """
+    [test]
+    listing = value 1,value 2, value 3 , v4
+    """
+    parser.read_string(test)
+    li = parser.getlisting("test", "listing")
+    assert len(li) > 0
+    assert ["value 1", "value 2", "value 3", "v4"] == li
+
+def test_getlisting_multi():
+    parser = StdConfigParser()
+    test = """
+    [test]
+    listing = value 1,
+        value 2, value 3
+         , v4
+    """
+    parser.read_string(test)
+    li = parser.getlisting("test", "listing")
+    assert len(li) > 0
+    assert ["value 1", "value 2", "value 3", "v4"] == li
 
 def test_getjson():
     parser = StdConfigParser()

@@ -34,7 +34,11 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.todo',
+    'sphinx.ext.intersphinx',
 ]
+
+
+intersphinx_mapping = {'python': ('https://docs.python.org/3.5', None)}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -272,6 +276,7 @@ latex_documents = [
 # the title page.
 #
 # latex_logo = None
+latex_logo = 'stdconfig.png'
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.

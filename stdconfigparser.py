@@ -1445,9 +1445,18 @@ else:
 
 
 def _convert_lines(value):
-    """Split string value into lines and return this list without empty lines."""
+    """
+    Split string value into lines and return this list without empty lines.
+    """
     lines = [line for line in value.splitlines() if line]
     return lines
+
+def _convert_listing(value):
+    """
+    Split string values by ',' trim the values and return it as list.
+    """
+    listing = [elem.strip() for elem in value.split(',') if elem]
+    return listing
 
 
 class StdConfigParser(ConfigParser):
@@ -1455,6 +1464,7 @@ class StdConfigParser(ConfigParser):
     def __init__(self, defaults=None, converters=None):
         converters = {} if converters is None else converters
         converters.update(lines=_convert_lines,
+                          listing=_convert_listing,
                           json=json.loads)
         interpolation = ExtendedInterpolation()
         super(StdConfigParser, self).__init__(defaults=defaults,

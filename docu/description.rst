@@ -14,23 +14,25 @@ An Example is better than a lot of words:
 
 .. code-block:: ini
 
-	[section]
-	key = value
+    [section]
+    key = value
 
-	valuelist = multi line
-	            values
-	            # with comment
-	            fetchable as list
+    envlist = env1,env2,env3
 
-	complex_value = {
-		"key 1": 1,
-		"key 2": 2,
-		# special list of environments
-		"env list": ["a", "b"],
-		}
+    valuelist = multi line
+                values
+                # with comment
+                fetchable as list
 
-	[other_section]
-	name = ${section:key}
+    complex_value = {
+        "key 1": 1,
+        "key 2": 2,
+        # special list of environments
+        "env list": ["a", "b"],
+        }
+
+    [other_section]
+    name = ${section:key}
 
 
 As you can see a lot is possible with simple INI style syntax.
@@ -114,18 +116,19 @@ Features
 
 Ultimate goal: Become the standard way for Python applications to configure
 something and be the one interchangeable user readable configuration format.
-So everyone knows it and uses it. Don't rule the world only a title part of it.
+So everyone knows it and uses it.
 
 
 Why do I care about a configuration format?
 -------------------------------------------
 
-Valid question, simple by my own use case and needs and because I am a little
+Valid question, simply by my own use case and needs and because I am a little
 tiered to learn the next new better format with advanced features.
 But my main motivation is to bring in mind: If the configuration is there to be
 used by humans sit down think a minute and make it really friendly and
 human usable. I added friendly because this is essential for me. Forgive the
-users also some errors they are not perfect and I am a user too.
+users also some errors they are not perfect and I am a user too. And if not
+needed enforce not a complicated syntax for the value.
 Define a format usable for a lot of stuff. But not to complex and yet powerful.
 Hopefully everyone loves it and then uses it.
 
@@ -133,6 +136,7 @@ Some words about other know formats:
 
 TOML - Also useful solves more complex problems. But no final specification
        and tries to solve problems to complex for most users.
+       You have to learn a new syntax to handle it that is not easy.
        Supports nested mappings and lists in a way like a programmer will do it
        but not as a user will like it. Don't burden the user of the
        configuration with your preferred result structure. If the configuration
@@ -149,7 +153,7 @@ YAML - Initially looks nice and the real solution for every configuration need.
        configuration is simple but in this case also has a more complex syntax.
        Everytime I have to write YAML configuration, first I must consult the
        manual of the package and the YAML specification to do it right.
-       The syntax is twos steps to complex to be easy and user friendly.
+       The syntax is two steps to complex to be easy and user friendly.
 
 JSON - Good interchangeable serialization format but not so good for
        configuration. Allows no comments. Syntax is to complex and error prone
@@ -172,8 +176,8 @@ as simple as possible. This implies also, don't write the configuration only
 for your needs write it for none programmer users in mind. Avoid deep nested
 structures and don't require knowledge from your users about dictionaries or
 lists and nested structures. Also not about how to format integer or strings
-in the syntax. Really, keep it simple. Every format listed above avoids this
-in one or another way.
+in the syntax. Really, keep it simple. Every format listed above has
+shortcomings in one or another point.
 
 
 My configuration history (in short)
@@ -195,6 +199,7 @@ capable to handle a lot of use cases.
 But for all of this I have noticed the really first one is still one of the best.
 Why? It is simple. The simplest configuration format nearly every one understood
 from the beginning is something like you have a key and it has a value.
+Both are strings and have not special syntax to note it, like a hyphen.
 The INI style adds to this only something like sections. Which allows to have
 different configurations in one file. At the end of my configuration history I
 am back to the beginning. Simple key value with a bonus.
@@ -426,25 +431,25 @@ be indented to distinguish them from a key and make them part of the value.
 
     [section]
     multiline = This value is over
-    			multilple lines
-    			and another one
+                multilple lines
+                and another one
 
     [section2]
     multiline2 =
-    	event this is
-    	a
-    	multiline
-    	value
+        event this is
+        a
+        multiline
+        value
 
     [section3]
     multiup =
-    	comments are
-    	allowed
-    	# my comment
-    	in the value
-    	event
+        comments are
+        allowed
+        # my comment
+        in the value
+        event
 
-    	empty lines
+        empty lines
 
 
 As you can see, the user has the possibility to write values over multiple lines
@@ -474,7 +479,7 @@ in the file. The need to have them because of interpolation is also lowered.
 We can specify the section explicitly.
 
 For all of this, keep in mind, there can be a special section in a file called
-"DEFAULTS". If you see it remember my words about it.
+"DEFAULT". If you see it remember my words about it.
 If you use the write method of the parser you will also see these defaults.
 
 
@@ -628,14 +633,37 @@ The StdConfigParser does this not. The user of a configuration file should not
 learn a new syntax. Everything is section, key (option) value format. The value
 is documented by the application how the string is interpreted.
 
+Listing of values (``getlisting``)
+----------------------------------
 
-Multiple values
----------------
+You have the need to list some short values. The normal way if you write text
+is to do this by simply separating them by ``,``. This is also a good solution
+in a configuration value. Use this if you list short values and the length
+of the list is also short. If you want list longer values use the feature
+described in multiple values.
+
+Example:
+
+.. code-block:: ini
+
+    [section]
+    listing = env1,env2,env3
+
+
+Each value will be striped and empty values are ignored by ``getlisting``.
+Use it if you want enumerate short string values.
+They can also be split over multiple lines. But this is not a feature only to
+be fault tolerant. If you have more or longer values use the ``getlines``
+feature described in the next section.
+
+
+Multiple values (``getlines``)
+------------------------------
 
 For most configurations there are extended use cases. One is to specify a
-list of values. The simplest way for an user is to specify this line by line,
+list of longer values. The simplest way for an user is to specify this line by line,
 every line is a value. For the application this is the method "getlines".
-A simple helping converting allowing a easy multi line value syntax.
+A simple helping converter allowing a easy multi line value syntax.
 
 Example:
 
@@ -651,9 +679,9 @@ Example:
                 value 5
 
     simple_indent_multi_is_enough =
-    	line 1
-    	line 2
-    	line 3
+        line 1
+        line 2
+        line 3
 
 
 As you can see, simple valid multi line syntax. Easy for the user to see this
@@ -669,8 +697,8 @@ it. I recommend simple use the getlines function and multiline value feature
 for this use case.
 
 
-Advanced value syntax
----------------------
+Advanced value syntax (``getjson``)
+-----------------------------------
 
 Sometimes, hopefully never, you have the need for more complex configuration
 structure. If you cannot avoid it and you really need something like a deeper
@@ -710,13 +738,13 @@ Example:
     object = {"data": "in a dict", "x": 10}
 
     now_it_gets_complex = {
-    	"key": "value",
-    	# with comment
-    	"feature": "over multiple",
+        "key": "value",
+        # with comment
+        "feature": "over multiple",
 
-    	"lines": 7,
-    	"5": ["in", "a", "list", true, null, 3.14]
-    	}
+        "lines": 7,
+        "5": ["in", "a", "list", true, null, 3.14]
+        }
 
     event_interpolated = [${object}, {}, "it works"]
 
@@ -834,9 +862,72 @@ Example:
               more value
 
 
+API
+===
+
+It has the same api as the :class:`configparser.ConfigParser` from Python 3.5.
+But if a text file is read, the default encoding is ``UTF-8``.
+And only three simple converters were added:
+
+1. getlisting
+2. getlines
+3. getjson
+
+
+.. function:: getlisting(section, option, raw=False, vars=None [, fallback])
+
+    Handles listing of values. Each value is separated by ``,``. Returns
+    a list with none empty values. White space's are stripped. The values are
+    split by ``,``.
+
+    Example::
+
+        key = py33,py34, py35
+
+        -> ["py33", "py34", "py35"]
+
+
+.. function:: getlines(section, option, raw=False, vars=None [, fallback])
+
+    Converts multi line values into a list of values. Each line is stripped.
+    Comments and empty lines are removed.
+
+    Example::
+
+        key = value 1
+              value 2
+              # comment
+              value 3
+
+        -> ["value 1", "value 2", "value 3"]
+
+
+.. function:: getjson(section, option, raw=False, vars=None [, fallback])
+
+    Converts the value using the JSON parser. The parsing result is then
+    returned.
+    Comments and empty lines are removed before the JSON parser handles the
+    value.
+
+    Example::
+
+        key = { "key1": "value1",
+                #comment
+                "key2": "value2"}
+
+        -> {"key1": "value1", "key2": "value2"}
+
+
+All converters are also available at the section proxy level without the
+``section`` parameter then.
+
 
 Examples
 ========
+
+.. note:: The example section is still work in progress. Not all are ready
+          and the code is not tested yet and can contain errors.
+
 
 Examples describe a special use case and the solution how to handle
 this with the StdConfigParser.
@@ -900,10 +991,7 @@ In the main section there is a list with the active environments.
 .. code-block:: INI
 
     [mymodule]
-    environments =
-        py33
-        py35
-        py27
+    environments = py33,py35,py27
 
     [mymodule py33]
     path = py33
@@ -935,14 +1023,17 @@ handle this only the getlines() helper method of StdConfigParser is used.
         config = get_config("./mymodule.cfg")
         envprefix = "mymodule "
 
-        environments = config.getlines("mymodule", "environments")
+        environments = config.getlisting("mymodule", "environments")
         for environment in environments:
             path = config.get(envprefix + environment, "path", fallback=".")
             # you get only the specified without py34 path
             # it is also got to use fallback here if a environment is listed
             # but no configuration value is provided
 
-
+If you have more than one listing for your multiple sections it can be better
+to use a namespace then. Something like ``[mymodule.env.py33]`` for a section.
+And access the section with ``envprefix = "mymodule.env."``. Basic technique
+described in next example.
 
 Multiple sections namespace package
 -----------------------------------
