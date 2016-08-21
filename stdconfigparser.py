@@ -36,8 +36,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import sys
-import json
 
 __version__ = "0.5"
 
@@ -50,6 +48,10 @@ __all__ = ["NoSectionError", "DuplicateOptionError", "DuplicateSectionError",
            "LegacyInterpolation", "SectionProxy", "ConverterMapping",
            "DEFAULTSECT", "MAX_INTERPOLATION_DEPTH",
            "StdConfigParser"]
+
+
+import sys
+import json
 
 
 PY2 = sys.version_info[0] == 2
