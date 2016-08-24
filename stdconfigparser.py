@@ -1482,8 +1482,8 @@ class StdConfigParser(ConfigParser):
                                               interpolation=interpolation,
                                               converters=converters)
 
-    def read(self, filenames, encoding=None):
-        encoding = "utf-8" if encoding is None else encoding
+    def read(self, filenames):
+        encoding = "utf-8"
         super(StdConfigParser, self).read(filenames, encoding)
 
 
