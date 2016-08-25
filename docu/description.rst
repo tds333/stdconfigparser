@@ -436,7 +436,7 @@ be indented to distinguish them from a key and make them part of the value.
 
     [section2]
     multiline2 =
-        event this is
+        even this is
         a
         multiline
         value
@@ -447,7 +447,7 @@ be indented to distinguish them from a key and make them part of the value.
         allowed
         # my comment
         in the value
-        event
+        even
 
         empty lines
 
@@ -746,7 +746,7 @@ Example:
         "5": ["in", "a", "list", true, null, 3.14]
         }
 
-    event_interpolated = [${object}, {}, "it works"]
+    even_interpolated = [${object}, {}, "it works"]
 
 
 
