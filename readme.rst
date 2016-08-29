@@ -11,9 +11,10 @@ Everything in one module easy to vendor or install as extra dependency.
 
 
 `Documentation <http://stdconfigparser.readthedocs.org/>`_
+
 `ChangeLog <http://stdconfigparser.readthedocs.io/en/latest/changelog.html>`_
 
-`Source code <https://github.com/tds333/stdconfigparser>`_
+`Source code on github <https://github.com/tds333/stdconfigparser>`_
 
 
 Example config file::
