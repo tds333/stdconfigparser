@@ -18,7 +18,7 @@ Everything in one module easy to vendor or install as extra dependency.
 
 Example config file::
 
-	[section]
+    [section]
     key = value
 
     envlist = env1,env2,env3
