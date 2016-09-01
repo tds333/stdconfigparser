@@ -1454,6 +1454,7 @@ def _convert_lines(value):
     lines = [line for line in value.splitlines() if line]
     return lines
 
+
 def _convert_listing(value):
     """
     Split string values by ',' trim the values and return it as list.
