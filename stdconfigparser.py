@@ -1463,13 +1463,21 @@ def _convert_listing(value):
     return listing
 
 
+def _convert_json(value):
+    """
+    Parses value as JSON string and returns the converted data.
+    Can be every valid JSON value.
+    """
+    return json.loads(value)
+
+
 class StdConfigParser(ConfigParser):
 
     def __init__(self, defaults=None, converters=None):
         converters = {} if converters is None else converters
         converters.update(lines=_convert_lines,
                           listing=_convert_listing,
-                          json=json.loads)
+                          json=_convert_json)
         interpolation = ExtendedInterpolation()
         super(StdConfigParser, self).__init__(defaults=defaults,
                                               dict_type=OrderedDict,
@@ -1484,10 +1492,9 @@ class StdConfigParser(ConfigParser):
                                               converters=converters)
 
     def read(self, filenames):
-        encoding = "utf-8"
-        super(StdConfigParser, self).read(filenames, encoding)
+        super(StdConfigParser, self).read(filenames, "utf-8")
 
-
+    # Needed for improved error messages if a converter fails
     def _get_conv(self, section, option, conv, **kwargs):
         try:
             return super(StdConfigParser, self)._get_conv(section, option, conv, **kwargs)
