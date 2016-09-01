@@ -2,8 +2,12 @@ StdConfigParser
 ---------------
 
 This is the Python configparser with an extra class StdConfigParser.
+The StdConfigParser class uses specified parameters to initialize
+the Python ConfigParser and adds some useful converters.
+The result is a simple well defined syntax for the INI file.
+See it as a preconfigured ConfigParser class for you.
+It allows interoperability in configuration between different projects.
 
-Provides a standard configuration syntax and the parser for it.
 Also contains everything to be a backport of the ConfigParser from
 Python 3.5 to Python 2.7.
 
@@ -22,14 +26,14 @@ Example config file::
     [section]
     key = value
 
-    envlist = env1,env2,env3
+    envlisting = env1,env2,env3
 
     valuelist = multi line
                 values
                 # with comment
                 fetchable as list
 
-    complex_value = {
+    complex_json_value = {
         "key 1": 1,
         "key 2": 2,
         # special list of environments
