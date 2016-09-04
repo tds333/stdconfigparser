@@ -72,11 +72,14 @@ For me the requirements are:
 
 1. It must be simple, have not that much time to learn another new configuration
 format.
+
 2. I (a human) have to read and write stuff in this format. So it should be
 based on text I can read and write with a simple text editor.
+
 3. It should allow me to customize some parts of a program or application. I
 don't want to change source code for it nor I want to write program logic in the
 configuration.
+
 4. If possible, have the configuration for my applications in one place, best is
 to have it in one file. So I don't have to search through the file system.
 
@@ -615,7 +618,7 @@ Goodies
 
 Sometimes you need a little bit more than a simple string as a value.
 The ConfigParser provides converter functions for you for the most basic
-types like: int, bool, float usable by parser.getInt(), parser.getfloat()
+types like: int, bool, float usable by parser.getint(), parser.getfloat()
 and parser.getboolean() function.
 If you use these functions the value will be converted for you as specified.
 And yes by using converters you can really do a lot. Still keeping the
@@ -869,9 +872,9 @@ It has the same api as the :class:`configparser.ConfigParser` from Python 3.5.
 But if a text file is read, the default encoding is ``UTF-8``.
 And only three simple converters were added:
 
-1. getlisting
-2. getlines
-3. getjson
+1. listing (getlisting)
+2. lines (getlines)
+3. json (getjson)
 
 
 .. function:: getlisting(section, option, raw=False, vars=None [, fallback])
