@@ -56,6 +56,12 @@ import json
 
 PY2 = sys.version_info[0] == 2
 
+def from_none(exc):
+    """raise from_none(ValueError('a')) == raise ValueError('a') from None"""
+    exc.__cause__ = None
+    exc.__suppress_context__ = True
+    return exc
+
 # whole Python 2 implementation based on the backport of configparser
 # lot of stuff copied also from Python standard library implementation
 if PY2:
@@ -91,11 +97,11 @@ if PY2:
     str = type('str') # same as str = unicode because of __future__.unicode_literals
 
 
-    def from_none(exc):
-        """raise from_none(ValueError('a')) == raise ValueError('a') from None"""
-        exc.__cause__ = None
-        exc.__suppress_context__ = True
-        return exc
+    # def from_none(exc):
+    #     """raise from_none(ValueError('a')) == raise ValueError('a') from None"""
+    #     exc.__cause__ = None
+    #     exc.__suppress_context__ = True
+    #     return exc
 
 
     # from reprlib 3.2.1
@@ -1471,6 +1477,71 @@ def _convert_json(value):
     return json.loads(value)
 
 
+class StdInterpolation(ExtendedInterpolation):
+    """Interpolation based on the configparser.ExtendedInterpolation.
+
+    Adds only the feature to be more tolerant and support ':' also in the
+    section name.
+    """
+
+    def _interpolate_some(self, parser, option, accum, rest, section, map,
+                          depth):
+        rawval = parser.get(section, option, raw=True, fallback=rest)
+        if depth > MAX_INTERPOLATION_DEPTH:
+            raise InterpolationDepthError(option, section, rawval)
+        while rest:
+            p = rest.find("$")
+            if p < 0:
+                accum.append(rest)
+                return
+            if p > 0:
+                accum.append(rest[:p])
+                rest = rest[p:]
+            # p is no longer used
+            c = rest[1:2]
+            if c == "$":
+                accum.append("$")
+                rest = rest[2:]
+            elif c == "{":
+                m = self._KEYCRE.match(rest)
+                if m is None:
+                    raise InterpolationSyntaxError(option, section,
+                          "bad interpolation variable reference %r" % rest)
+                path = m.group(1).split(':')
+                rest = rest[m.end():]
+                sect = section
+                opt = option
+                try:
+                    if len(path) == 1:
+                        opt = parser.optionxform(path[0])
+                        v = map[opt]
+                    elif len(path) == 2:
+                        sect = path[0]
+                        opt = parser.optionxform(path[1])
+                        v = parser.get(sect, opt, raw=True)
+                    else:
+                        sect = ":".join(path[0:-1])
+                        opt = parser.optionxform(path[-1])
+                        v = parser.get(sect, opt, raw=True)
+                        # raise InterpolationSyntaxError(
+                        #     option, section,
+                        #     "More than one ':' found: %r" % (rest,))
+                except (KeyError, NoSectionError, NoOptionError):
+                    raise from_none(InterpolationMissingOptionError(
+                        option, section, rawval, ":".join(path)))
+                if "$" in v:
+                    self._interpolate_some(parser, opt, accum, v, sect,
+                                           dict(parser.items(sect, raw=True)),
+                                           depth + 1)
+                else:
+                    accum.append(v)
+            else:
+                raise InterpolationSyntaxError(
+                    option, section,
+                    "'$' must be followed by '$' or '{', "
+                    "found: %r" % (rest,))
+    pass
+
 class StdConfigParser(ConfigParser):
 
     def __init__(self, defaults=None, converters=None):
@@ -1478,7 +1549,6 @@ class StdConfigParser(ConfigParser):
         converters.update(lines=_convert_lines,
                           listing=_convert_listing,
                           json=_convert_json)
-        interpolation = ExtendedInterpolation()
         super(StdConfigParser, self).__init__(defaults=defaults,
                                               dict_type=OrderedDict,
                                               allow_no_value=False,
@@ -1488,7 +1558,7 @@ class StdConfigParser(ConfigParser):
                                               strict=True,
                                               empty_lines_in_values=True,
                                               default_section=DEFAULTSECT,
-                                              interpolation=interpolation,
+                                              interpolation=StdInterpolation(),
                                               converters=converters)
 
     def read(self, filenames):

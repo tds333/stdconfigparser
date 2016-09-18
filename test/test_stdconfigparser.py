@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 
 import pytest
 
-from stdconfigparser import StdConfigParser
+from stdconfigparser import StdConfigParser, InterpolationMissingOptionError
 
 
 def test_init():
@@ -20,6 +20,7 @@ def test_init():
     parser = StdConfigParser(converters={"bool": bool})
     assert parser
     assert parser.getbool("DEFAULT", "notthere", fallback=True)
+
 
 def test_getlines():
     parser = StdConfigParser()
@@ -35,6 +36,7 @@ def test_getlines():
     assert len(lines) > 0
     assert [str(i) for i in range(1, 5)] == lines
 
+
 def test_getlines_trim():
     parser = StdConfigParser()
     test = """
@@ -48,6 +50,7 @@ def test_getlines_trim():
     assert len(lines) > 0
     assert ["value 1", "value 2"] == lines
 
+
 def test_getlisting():
     parser = StdConfigParser()
     test = """
@@ -58,6 +61,7 @@ def test_getlisting():
     li = parser.getlisting("test", "listing")
     assert len(li) > 0
     assert ["value 1", "value 2", "value 3", "v4"] == li
+
 
 def test_getlisting_multi():
     parser = StdConfigParser()
@@ -71,6 +75,7 @@ def test_getlisting_multi():
     li = parser.getlisting("test", "listing")
     assert len(li) > 0
     assert ["value 1", "value 2", "value 3", "v4"] == li
+
 
 def test_getjson():
     parser = StdConfigParser()
@@ -89,6 +94,55 @@ def test_getjson():
     assert sec.getjson("string") == "xyz"
     assert sec.getjson("number") == 10000000
     assert sec.getjson("float") == 3.14
+
+
+def test_interpolation():
+    parser = StdConfigParser()
+    test = """
+    [DEFAULT]
+    a = 100
+    [test]
+    x = 0
+    value_a = ${a}
+    value_x = ${x}
+    value_ix = ${i:x}
+    value_y = ${y}
+    value_iy = ${i:y}
+    [i]
+    x = 1
+    y = 2
+    """
+    parser.read_string(test)
+    sec = parser["test"]
+    assert sec.getint("x") == 0
+    assert sec["x"] == "0"
+    assert sec["value_a"] == "100"
+    assert sec["value_x"] == "0"
+    assert sec["value_ix"] == "1"
+    assert sec["value_iy"] == "2"
+    with pytest.raises(InterpolationMissingOptionError):
+        sec["value_y"]
+
+
+def test_sectioninterpolation():
+    parser = StdConfigParser()
+    test = """
+    [test]
+    x = 0
+    value_x = ${x}
+    value_ix = ${inter:sec:x}
+    value_iy = ${inter:sec:y}
+    [inter:sec]
+    x = 1
+    """
+    parser.read_string(test)
+    sec = parser["test"]
+    assert sec.getint("x") == 0
+    assert sec["x"] == "0"
+    assert sec["value_x"] == "0"
+    assert sec["value_ix"] == "1"
+    with pytest.raises(InterpolationMissingOptionError):
+        sec["value_iy"]
 
 
 def test_conv_error():

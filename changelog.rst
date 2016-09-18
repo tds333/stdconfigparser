@@ -7,6 +7,7 @@ Changelog
 
 - Make StdConfigParser available in __all__.
 - Remove encoding parameter in method read(). Make fixed use of utf-8.
+- Add support for ':' in section interpolation.
 
 
 0.4
