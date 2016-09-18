@@ -275,7 +275,6 @@ A section starts with a "[" and ends with a "]" all between is part of the
 section name (case sensitive). As with comments sections can be indented but
 try to avoid this.
 It implies a structure and this structure is not there when parsed.
-Also avoid ":" in the section name. Later on this for interpolation.
 
 .. code-block:: ini
 
@@ -308,7 +307,7 @@ more deeply and have nearly similar sections describing the parts.
 Still use one section with your module/package name, this is your main configuration
 section. For the other more detailed configuration sections prefix your module
 name followed by a space. The space is the separator. Don't use other characters
-and avoid the ":" in the section.
+and try to avoid the ":" in the section.
 
 Example:
 
@@ -365,8 +364,8 @@ installed modules. A good indicator for such a use case is if "myxml" is a
 namespace package.
 
 
-Keys
-----
+Keys (options)
+--------------
 
 Keys start at position one in a line and are all lower case. That said, it is
 good to write them lower case in the configuration file because they will be
@@ -397,6 +396,8 @@ If you have the seldom need to have a structure in your keys you can use
 "/" between the words. With this you can build a tree like structure.
 All this is only a convention a key still is a simple string. It is up to
 the application to implement and document it.
+Don't use ":" in a key. Other INI file formats use this as key value separator
+and we want to avoid confusion here.
 
 
 Values
@@ -427,7 +428,8 @@ It is allowed to have values over multiple lines. The value is still a simple
 string for the user and the interpretation is up to you. Multiline values must
 be indented to distinguish them from a key and make them part of the value.
 
-.. Example:
+
+Example:
 
 
 .. code-block:: ini
@@ -532,11 +534,9 @@ Interpolation can simplify the live for the user by having to specify the
 value in one place and use it also in another place.
 It can also simplify the application developers live by using it for good
 default values.
-Because of the ":" as separator between section and key, avoid the ":" in
-sections. If your section uses ":" in the name it cannot be used in complex
-interpolations. It is still not an error. Because if you decide to not
-interpolate something or interpolate only at application level. All is still
-fine.
+Because of the ":" as separator between section and key, try to avoid the ":" in
+sections. If your section uses ":" in the name only the last ":" is used to
+detect the option. Everything before the last ":" is used as section name.
 To use the ``$`` sign escape it with another one and use ``$$``.
 
 
