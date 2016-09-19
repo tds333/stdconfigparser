@@ -56,6 +56,7 @@ import json
 
 PY2 = sys.version_info[0] == 2
 
+
 def from_none(exc):
     """raise from_none(ValueError('a')) == raise ValueError('a') from None"""
     exc.__cause__ = None
@@ -1540,7 +1541,7 @@ class StdInterpolation(ExtendedInterpolation):
                     option, section,
                     "'$' must be followed by '$' or '{', "
                     "found: %r" % (rest,))
-    pass
+
 
 class StdConfigParser(ConfigParser):
 
