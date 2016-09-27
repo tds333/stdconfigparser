@@ -23,7 +23,8 @@
 This module provides the StdConfigParser class. A simple
 standard INI configuration parser with a specified format. All is based
 on the Python standard library configparser.
-For Python 2.7 it contains backported classes from Python 3 configparser module.
+For Python 2.7 it contains backported classes from Python 3.5 configparser
+module.
 
 The StdConfigParser includes also additional converter methods.
 They allow really powerful configurations by keeping all simple for the user.
@@ -1444,8 +1445,8 @@ if PY2:
             return len(self._data)
 
 
-# This is for Python 3, should work with 3.3 and above
-# yes it is short, because the Python 3 configparser module provides a lot
+# This is for Python 3, should work with 3.5 and above
+# yes it is short, because the Python 3.5 configparser module provides a lot
 else:
     from configparser import *
     from collections import OrderedDict
@@ -1466,16 +1467,8 @@ def _convert_listing(value):
     """
     Split string values by ',' trim the values and return it as list.
     """
-    listing = [elem.strip() for elem in value.split(',') if elem]
+    listing = [e for e in (elem.strip() for elem in value.split(',')) if e]
     return listing
-
-
-def _convert_json(value):
-    """
-    Parses value as JSON string and returns the converted data.
-    Can be every valid JSON value.
-    """
-    return json.loads(value)
 
 
 class StdInterpolation(ExtendedInterpolation):
@@ -1545,11 +1538,11 @@ class StdInterpolation(ExtendedInterpolation):
 
 class StdConfigParser(ConfigParser):
 
-    def __init__(self, defaults=None, converters=None):
+    def __init__(self, defaults=None, converters=None, interpolate=False):
         converters = {} if converters is None else converters
         converters.update(lines=_convert_lines,
-                          listing=_convert_listing,
-                          json=_convert_json)
+                          listing=_convert_listing)
+        interpolation = StdInterpolation() if interpolate else Interpolation()
         super(StdConfigParser, self).__init__(defaults=defaults,
                                               dict_type=OrderedDict,
                                               allow_no_value=False,
@@ -1559,7 +1552,7 @@ class StdConfigParser(ConfigParser):
                                               strict=True,
                                               empty_lines_in_values=True,
                                               default_section=DEFAULTSECT,
-                                              interpolation=StdInterpolation(),
+                                              interpolation=interpolation,
                                               converters=converters)
 
     def read(self, filenames):

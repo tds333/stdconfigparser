@@ -24,20 +24,16 @@ An Example is better than a lot of words:
                 # with comment
                 fetchable as list
 
-    complex_value = {
-        "key 1": 1,
-        "key 2": 2,
-        # special list of environments
-        "env list": ["a", "b"],
-        }
 
     [other_section]
+    # comment, optional interpolation
     name = ${section:key}
 
 
 As you can see a lot is possible with simple INI style syntax.
 The StdConfigParser class uses the ConfigurationParser from Python with
 specified defaults and additional powerful converters.
+Optionally the interpolation can be enabled.
 A standard configuration format for all of your applications.
 Easy to embed or use as a standalone module. All distributed as one file.
 
@@ -115,7 +111,7 @@ Features
   for the user it is still a simple string.
 - The user must only know sections, comments, keys, values and multi line values.
   Nothing more is needed to get the configuration syntax right.
-- Substitution is supported by the "${KEY}" interpolation format.
+- Substitution is optionally supported by the "${KEY}" interpolation format.
 
 Ultimate goal: Become the standard way for Python applications to configure
 something and be the one interchangeable user readable configuration format.
@@ -157,6 +153,8 @@ YAML - Initially looks nice and the real solution for every configuration need.
        Everytime I have to write YAML configuration, first I must consult the
        manual of the package and the YAML specification to do it right.
        The syntax is two steps to complex to be easy and user friendly.
+       And if you want to use it you really want only a restricted set of YAML.
+       This is then only one step to complex. ;-)
 
 JSON - Good interchangeable serialization format but not so good for
        configuration. Allows no comments. Syntax is to complex and error prone
@@ -219,13 +217,18 @@ In short:
     # comment
     key = value
 
+    multi_line_values =
+        are indented by
+        spaces at front
+
+
 All Unicode, if a file it must be UTF-8 encoded.
 
 That is all you must know to write and read configuration files in the specified
 format. But I will go into detail with examples for more parts of the specification.
 You can also call it a defined variant of an INI style configuration format.
 
-The configparser module in Python 3 is really good, it can and will be used to
+The configparser module in Python 3.5 is really good, it can and will be used to
 parse the specified "standard" format here. Also I explain my decisions for
 a choice in detail.
 
@@ -403,7 +406,7 @@ and we want to avoid confusion here.
 Values
 ------
 
-Now the interesting part comes. Values are simple strings and it is up to the
+Now the interesting part comes. Values are strings and it is up to the
 application to handle them. For the user of your configuration, they are
 really simple strings but you can make them more useful if you want.
 Try to escape the "$" sign with "$$" if you use interpolation. No other
@@ -700,8 +703,12 @@ it. I recommend simple use the getlines function and multiline value feature
 for this use case.
 
 
-Advanced value syntax (``getjson``)
------------------------------------
+Advanced value syntax with custom (``getjson``) as converter
+------------------------------------------------------------
+
+
+This is not part of the StdConfigParser but with adding a simple new converter
+it can be enabled.
 
 Sometimes, hopefully never, you have the need for more complex configuration
 structure. If you cannot avoid it and you really need something like a deeper
@@ -732,6 +739,17 @@ problem. It is a feature to improve readability.
 
 
 Example:
+
+.. code-block:: python
+
+  import json
+  from stdconfigparser import StdConfigParser
+
+  config_parser = StdConfigParser(converters={"json": json.loads},
+                                  interpolate=True)
+
+  # later use config_parser.getjson(...) method
+
 
 .. code-block:: ini
 
@@ -870,11 +888,12 @@ API
 
 It has the same api as the :class:`configparser.ConfigParser` from Python 3.5.
 But if a text file is read, the default encoding is ``UTF-8``.
-And only three simple converters were added:
+The constructor is simplified to have only ``defaults``, ``converters`` and
+the ``interpolate`` flag.
+Two converters are added by default:
 
 1. listing (getlisting)
 2. lines (getlines)
-3. json (getjson)
 
 
 .. function:: getlisting(section, option, raw=False, vars=None [, fallback])
@@ -903,22 +922,6 @@ And only three simple converters were added:
               value 3
 
         -> ["value 1", "value 2", "value 3"]
-
-
-.. function:: getjson(section, option, raw=False, vars=None [, fallback])
-
-    Converts the value using the JSON parser. The parsing result is then
-    returned.
-    Comments and empty lines are removed before the JSON parser handles the
-    value.
-
-    Example::
-
-        key = { "key1": "value1",
-                #comment
-                "key2": "value2"}
-
-        -> {"key1": "value1", "key2": "value2"}
 
 
 All converters are also available at the section proxy level without the
@@ -1174,8 +1177,33 @@ All this is fine for JSON syntax only keep in mind the configuration parsing
 rules apply first. The value indent must be correct even if JSON normally allows
 a more syntax formats.
 
-Before you do this, please think some minutes if you really need this feature.
-Don't overuse it.
+.. code-block:: INI
+
+    [mymodule]
+    json_value = {"key": "value", "int_value": 100}
+    json_list = [1, 2, 3, 4, "five"]
+    complex = {"name": "test_environ",
+               "paths":
+                  ["/home/username",
+                   "/usr/local/bin"]
+              }
+
+
+.. code-block:: Python
+
+    import json
+    from stdconfigparser import StdConfigParser
+
+    def get_config(path):
+        config = StdConfigParser(converters={"json": json.loads})
+        config.read(path)
+        return config
+
+    def main():
+        config = get_config("~/mymodule.cfg")
+        value = config.getjson("mymodule", "json_value")
+        list_value = config.getjson("mymodule", "json_list")
+        complex = config.getjson("mymodule", "complex")
 
 
 Config file includes

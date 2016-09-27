@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.6
+---
+
+Simplification
+
+- Make interpolation optional and default disable it.
+- Remove JSON converter. Can still be added as a custom converter.
+
 
 0.5
 ---

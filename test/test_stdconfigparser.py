@@ -7,8 +7,10 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import pytest
+import json
 
-from stdconfigparser import StdConfigParser, InterpolationMissingOptionError
+from stdconfigparser import (StdConfigParser, InterpolationMissingOptionError,
+                             ParsingError)
 
 
 def test_init():
@@ -43,8 +45,7 @@ def test_getlines_trim():
     [test]
     multiline =
         value 1
-          value 2
-    """
+          value 2   """
     parser.read_string(test)
     lines = parser.getlines("test", "multiline")
     assert len(lines) > 0
@@ -56,11 +57,14 @@ def test_getlisting():
     test = """
     [test]
     listing = value 1,value 2, value 3 , v4
+    list_empty = v1,,v2, ,v3
     """
     parser.read_string(test)
     li = parser.getlisting("test", "listing")
     assert len(li) > 0
     assert ["value 1", "value 2", "value 3", "v4"] == li
+    li = parser.getlisting("test", "list_empty")
+    assert ["v1", "v2", "v3"] == li
 
 
 def test_getlisting_multi():
@@ -78,7 +82,7 @@ def test_getlisting_multi():
 
 
 def test_getjson():
-    parser = StdConfigParser()
+    parser = StdConfigParser(converters={"json": json.loads})
     test = """
     [test]
     list = [1,2,3, "4"]
@@ -97,7 +101,7 @@ def test_getjson():
 
 
 def test_interpolation():
-    parser = StdConfigParser()
+    parser = StdConfigParser(interpolate=True)
     test = """
     [DEFAULT]
     a = 100
@@ -125,15 +129,18 @@ def test_interpolation():
 
 
 def test_sectioninterpolation():
-    parser = StdConfigParser()
+    parser = StdConfigParser(interpolate=True)
     test = """
     [test]
     x = 0
     value_x = ${x}
     value_ix = ${inter:sec:x}
     value_iy = ${inter:sec:y}
+    value_is = ${:strange::::::::::sec::s}
     [inter:sec]
     x = 1
+    [:strange::::::::::sec:]
+    s = 9
     """
     parser.read_string(test)
     sec = parser["test"]
@@ -143,6 +150,7 @@ def test_sectioninterpolation():
     assert sec["value_ix"] == "1"
     with pytest.raises(InterpolationMissingOptionError):
         sec["value_iy"]
+    assert sec["value_is"] == "9"
 
 
 def test_conv_error():
@@ -163,6 +171,23 @@ def test_conv_error():
         assert sec.getfloat("string")
     with pytest.raises(ValueError):
         assert sec.getboolean("string")
+
+
+def test_ParsingError():
+    parser = StdConfigParser()
+    test = """
+    [test]
+    int : 100
+    """
+    with pytest.raises(ParsingError):
+      parser.read_string(test)
+    parser = StdConfigParser()
+    test = """
+    [test
+    ]
+    """
+    with pytest.raises(ParsingError):
+      parser.read_string(test)
 
 
 def test_complex():
@@ -231,8 +256,7 @@ not_invalid =
   ["a", "b"]
 """
 
-    #parser = StdConfigParser(interpolate=False)
-    parser = StdConfigParser()
+    parser = StdConfigParser(converters={"json": json.loads}, interpolate=True)
     parser.read_string(example)
     assert parser.get("mysection", "name") == "My troublesome name"
     assert parser.get("section2", "name2") == "My troublesome name"
