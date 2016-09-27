@@ -85,27 +85,20 @@ if PY2:
         except ImportError:
             from _dummy_thread import get_ident
 
-    import functools
-    import io
-    import itertools
-    import re
-    import warnings
+
+    # stuff from backports helpers
+
+    str = type('str') # same as str = unicode because of __future__.unicode_literals
 
     # constants
     DEFAULTSECT = "DEFAULT"
 
     MAX_INTERPOLATION_DEPTH = 10
 
-    # stuff from backports helpers
-
-    str = type('str') # same as str = unicode because of __future__.unicode_literals
-
-
-    # def from_none(exc):
-    #     """raise from_none(ValueError('a')) == raise ValueError('a') from None"""
-    #     exc.__cause__ = None
-    #     exc.__suppress_context__ = True
-    #     return exc
+    # Used in parser getters to indicate the default behaviour when a specific
+    # option is not found it to raise an exception. Created to enable `None' as
+    # a valid fallback value.
+    _UNSET = object()
 
 
     # from reprlib 3.2.1
@@ -136,7 +129,7 @@ if PY2:
         return decorating_function
 
     # from collections 3.2.1
-    class _ChainMap(MutableMapping):
+    class ChainMap(MutableMapping):
         ''' A ChainMap groups multiple dicts (or other mappings) together
         to create a single, updateable view.
 
@@ -234,9 +227,17 @@ if PY2:
 if PY33 or PY34:
 
     from reprlib import recursive_repr
-    from collections import ChainMap
+    from collections import ChainMap, MutableMapping, OrderedDict
+    from configparser import _UNSET, DEFAULTSECT, MAX_INTERPOLATION_DEPTH
 
 if PY2 or PY33 or PY34:
+
+    import functools
+    from io import StringIO
+    import itertools
+    import re
+    import warnings
+
 
     # exception classes
     class Error(Exception):
@@ -424,11 +425,6 @@ if PY2 or PY33 or PY34:
             self.line = line
             self.args = (filename, lineno, line)
 
-
-    # Used in parser getters to indicate the default behaviour when a specific
-    # option is not found it to raise an exception. Created to enable `None' as
-    # a valid fallback value.
-    _UNSET = object()
 
 
     class Interpolation(object):
@@ -798,7 +794,7 @@ if PY2 or PY33 or PY34:
 
         def read_string(self, string, source='<string>'):
             """Read configuration from a given string."""
-            sfile = io.StringIO(string)
+            sfile = StringIO(string)
             self.read_file(sfile, source)
 
         def read_dict(self, dictionary, source='<dict>'):
@@ -1240,7 +1236,7 @@ if PY2 or PY33 or PY34:
                     if value is not None:
                         value = str(value)
                     vardict[self.optionxform(key)] = value
-            return _ChainMap(vardict, sectiondict, self._defaults)
+            return ChainMap(vardict, sectiondict, self._defaults)
 
         def _convert_to_boolean(self, value):
             """Return a boolean value translating from other types if necessary.

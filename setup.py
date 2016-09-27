@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 import sys
 import os
+import runpy
 from setuptools import setup
 
 
 basepath = os.path.dirname(__file__)
-with open(os.path.join(basepath, "stdconfigparser.py")) as cfgparser:
-    versiondict = {}
-    exec(cfgparser.read(), versiondict)
-    version = versiondict["__version__"]
+versiondict = runpy.run_path(os.path.join(basepath, "stdconfigparser.py"))
+version = versiondict["__version__"]
+#with open(os.path.join(basepath, "stdconfigparser.py")) as cfgparser:
+#    exec(cfgparser.read(), versiondict)
 
 with open(os.path.join(basepath, "readme.rst")) as readme:
     long_description = readme.read()
@@ -24,6 +25,8 @@ setup(name='StdConfigParser',
           'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
+          'Programming Language :: Python :: 3.3',
+          'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
       ],
       keywords='configuration config ini parser',
