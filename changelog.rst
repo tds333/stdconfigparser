@@ -4,10 +4,8 @@ Changelog
 0.6
 ---
 
-Simplification
-
-- Make interpolation optional and default disable it.
-- Remove JSON converter. Can still be added as a custom converter.
+- Make interpolation optional. As default disable it.
+- Remove JSON converter. Can still be added as a custom converter with one line.
 - Add compatibility for Python 3.3 and Python 3.4.
 
 
