@@ -56,6 +56,8 @@ import json
 
 
 PY2 = sys.version_info[0] == 2
+PY33 = sys.version_info[:2] == (3,3)
+PY34 = sys.version_info[:2] == (3,4)
 
 
 def from_none(exc):
@@ -229,6 +231,12 @@ if PY2:
             'Clear maps[0], leaving maps[1:] intact.'
             self.maps[0].clear()
 
+if PY33 or PY34:
+
+    from reprlib import recursive_repr
+    from collections import ChainMap
+
+if PY2 or PY33 or PY34:
 
     # exception classes
     class Error(Exception):
