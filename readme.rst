@@ -9,9 +9,9 @@ See it as a preconfigured ConfigParser class for you.
 It allows interoperability in configuration between different projects.
 
 Also contains everything to be a backport of the ConfigParser from
-Python 3.5 to Python 2.7.
+Python 3.5 to Python 2.7, 3.3, 3.4.
 
-Everything in one module easy to vendor or install as extra dependency.
+Everything in one module easy to vendor or install no extra dependencies.
 
 
 `Documentation <http://stdconfigparser.readthedocs.org/>`_
@@ -33,12 +33,6 @@ Example config file::
                 # with comment
                 fetchable as list
 
-    complex_json_value = {
-        "key 1": 1,
-        "key 2": 2,
-        # special list of environments
-        "env list": ["a", "b"],
-        }
-
     [other_section]
+    # interpolation is a optional feature
     name = ${section:key}-substitution
