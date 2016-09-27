@@ -56,8 +56,8 @@ import json
 
 
 PY2 = sys.version_info[0] == 2
-PY33 = sys.version_info[:2] == (3,3)
-PY34 = sys.version_info[:2] == (3,4)
+PY33 = sys.version_info[:2] == (3, 3)
+PY34 = sys.version_info[:2] == (3, 4)
 
 
 def from_none(exc):
@@ -227,7 +227,7 @@ if PY2:
 if PY33 or PY34:
 
     from reprlib import recursive_repr
-    from collections import ChainMap, MutableMapping, OrderedDict
+    from collections import ChainMap, MutableMapping, OrderedDict  # noqa
     from configparser import _UNSET, DEFAULTSECT, MAX_INTERPOLATION_DEPTH
 
 if PY2 or PY33 or PY34:
