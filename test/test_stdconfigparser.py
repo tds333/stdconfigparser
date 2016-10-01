@@ -24,6 +24,38 @@ def test_init():
     assert parser.getbool("DEFAULT", "notthere", fallback=True)
 
 
+def test_simple():
+    parser = StdConfigParser()
+    test = """
+    [test]
+    key = value
+    key2: value2
+    key3 = value =
+    key4: value:
+    [test:]
+    key:= v
+    key2=: v
+    [test=]
+    $=$
+    [more]
+    empty=
+    """
+    parser.read_string(test)
+    assert "value" == parser.get("test", "key")
+    assert "value" == parser["test"]["key"]
+    assert "value2" == parser.get("test", "key2")
+    assert "value =" == parser.get("test", "key3")
+    assert "value:" == parser.get("test", "key4")
+    assert "= v" == parser.get("test:", "key")
+    assert ": v" == parser.get("test:", "key2")
+    assert "test=" in parser.sections()
+    assert "$" == parser.get("test=", "$")
+    assert "" == parser.get("more", "empty")
+    assert "" == parser.get("more", "nokey", fallback="")
+    assert "xyz" == parser.get("more", "nokey", vars={"nokey": "xyz"})
+    assert "xyz" == parser.get("test", "key", vars={"key": "xyz"})
+
+
 def test_getlines():
     parser = StdConfigParser()
     test = """
@@ -177,7 +209,7 @@ def test_ParsingError():
     parser = StdConfigParser()
     test = """
     [test]
-    int : 100
+    int @ 100
     """
     with pytest.raises(ParsingError):
       parser.read_string(test)

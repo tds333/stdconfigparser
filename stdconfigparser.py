@@ -1550,7 +1550,7 @@ class StdConfigParser(ConfigParser):
         super(StdConfigParser, self).__init__(defaults=defaults,
                                               dict_type=OrderedDict,
                                               allow_no_value=False,
-                                              delimiters=('=', ),
+                                              delimiters=('=', ':'),
                                               comment_prefixes=('#', ),
                                               inline_comment_prefixes=None,
                                               strict=True,
