@@ -1543,9 +1543,10 @@ class StdInterpolation(ExtendedInterpolation):
 class StdConfigParser(ConfigParser):
 
     def __init__(self, defaults=None, converters=None, interpolate=False):
-        converters = {} if converters is None else converters
-        converters.update(lines=_convert_lines,
-                          listing=_convert_listing)
+        _converters = {"lines": _convert_lines,
+                       "listing": _convert_listing}
+        if converters:
+            _converters.update(converters)
         interpolation = StdInterpolation() if interpolate else Interpolation()
         super(StdConfigParser, self).__init__(defaults=defaults,
                                               dict_type=OrderedDict,
@@ -1557,7 +1558,7 @@ class StdConfigParser(ConfigParser):
                                               empty_lines_in_values=True,
                                               default_section=DEFAULTSECT,
                                               interpolation=interpolation,
-                                              converters=converters)
+                                              converters=_converters)
 
     def read(self, filenames):
         super(StdConfigParser, self).read(filenames, "utf-8")

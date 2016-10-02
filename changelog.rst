@@ -7,6 +7,8 @@ Changelog
 - Allow ':' as option (key) value separator. Still the advice is to use '='
   as default. But support the variant to parse more INI styles. Also ':' is
   not allowed in a option name. Now this is explicit.
+- More examples in documentation.
+- Default provided converters can be overwritten.
 
 
 0.6

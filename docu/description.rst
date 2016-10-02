@@ -711,91 +711,6 @@ it. I recommend simple use the getlines function and multiline value feature
 for this use case.
 
 
-Advanced value syntax with custom (``getjson``) as converter
-------------------------------------------------------------
-
-
-This is not part of the StdConfigParser but with adding a simple new converter
-it can be enabled.
-
-Sometimes, hopefully never, you have the need for more complex configuration
-structure. If you cannot avoid it and you really need something like a deeper
-structure or you have demand of types in your value lists I have also a solution
-for it. The solution is JSON. Why? What?
-Yes in this complex case I don't reinvent the wheel. Most users for a
-Python application are already familiar to the Python syntax and JSON is nearly
-similar. It is documented and easy to read/write.
-But you may ask, I want to comment complex stuff. The answer is, yes you can.
-Comments are handled by the ConfigParser in a normal way. Only line comments are
-allowed. Also empty lines. But value indent must also be kept for JSON values.
-Even if you use JSON values keep in mind the value is handled as multi line
-string by the parser before you get it.
-I considered also providing ast.literal_eval(). But after first test, removed it
-in favor of using JSON. There is one simple problem with literal_eval, if you
-have a demand for Python 2 you will be in the bytes, str, unicode hell of it.
-In this case it is really not easy to write configuration code working with
-Python 2 and Python 3. And the configuration should be all unicode strings.
-Also literal_eval is tied to Python is parses a limited syntax of Python.
-But Python has multiple ways to specify a string. There is not one way like this
-is in JSON. Also it supports more than we need in configuration file like tuple.
-For Python 3 sets are also supported. So for Python 2 and Python 3 we have
-different allowed values. All this is not the case for JSON. The only feature
-we want to have not part of JSON are comments. But in this case they are
-handled by the config parser before JSON comes into the game.
-The requirement to have the whole multi line JSON value indented is not a
-problem. It is a feature to improve readability.
-
-
-Example:
-
-.. code-block:: python
-
-  import json
-  from stdconfigparser import StdConfigParser
-
-  config_parser = StdConfigParser(converters={"json": json.loads},
-                                  interpolate=True)
-
-  # later use config_parser.getjson(...) method
-
-
-.. code-block:: ini
-
-    [section]
-    key = ["some value in a list"]
-
-    object = {"data": "in a dict", "x": 10}
-
-    now_it_gets_complex = {
-        "key": "value",
-        # with comment
-        "feature": "over multiple",
-
-        "lines": 7,
-        "5": ["in", "a", "list", true, null, 3.14]
-        }
-
-    even_interpolated = [${object}, {}, "it works"]
-
-
-
-As you can see, these are still valid string values but if you use
-the "getjson" method of the parser, the value will be parsed for you
-and you get back the Python values. Comments are allowed, empty lines also
-as known by multi line configuration values. The user has the possibility
-to write it in a readable way. The application let Python parse the syntax in
-a safe way. This is really powerful. You can do nearly all complex configuration
-needs with it. Even to complex for the users. Keep this in mind.
-If you know this, use it only for the configuration keys where it is really
-needed. You have the power but your users must be able to handle it.
-
-Not complicated enough? Even the interpolation in the last line works as expected.
-Keep in mind the interpolation is still a simple string interpolation on access
-before the converter is called. The result of the interpolation must be valid
-JSON.
-
-All this magic is nothing more than a helper provided for StdConfigParser
-users. It is the same as getting the string and than using json.loads().
 
 
 Style guide
@@ -946,8 +861,8 @@ Examples
 Examples describe a special use case and the solution how to handle
 this with the StdConfigParser.
 
-Simple
-------
+Simple usage
+------------
 
 You need a configuration for a small module only with some configuration
 keys. No need for a nested configuration.
@@ -985,11 +900,129 @@ and only use your section.
         data_dir = config.get("data_dir")
         temp_dir = config.get("temp_dir")
 
-Defaults
---------
+
+Default values
+--------------
+
+The configuration file is only for you and there are global default values
+needed. So a user specifies a option only if he/she does not want the default
+value.
+
+Example:
+
+Your module or package name is 'mymodule'
+
+.. code-block:: INI
+
+    [mymodule]
+    data_dir = /data
+
+In your program code create the config parser instance retrieve the section
+and only use your section.
+
+.. code-block:: Python
+
+    from stdconfigparser import StdConfigParser
+
+    def get_config(path):
+        parser = StdConfigParser(defaults={"data_dir": "./data",
+                                           "temp_dir": "./tmp"})
+        parser.read(path)
+        config = parser["mymodule"]
+        return config
+
+    def main():
+        config = get_config("~/mymodule.cfg")
+        data_dir = config.get("data_dir")
+        temp_dir = config.get("temp_dir")
+
+
+In this case the for the 'temp_dir' option your provided default value is used.
+
 
 List of values
 --------------
+
+Most of your values are simple but some need to list something. Most of the
+time it is a list of allowed stuff or short labels.
+In this case you can use the ``getlisting`` converter provided out of the box.
+
+
+Example:
+
+.. code-block:: INI
+
+    [mymodule]
+    build_platforms = Linux, Windows, OSX
+    build_labels = html, pdf, exe, shared
+
+
+In your program code use the ``getlisting`` method of configparser. It returns
+a list with the values for you.
+
+
+.. code-block:: Python
+
+    from stdconfigparser import StdConfigParser
+
+    def get_config(path):
+        parser = StdConfigParser()
+        parser.read(path)
+        config = parser["mymodule"]
+        return config
+
+    def main():
+        config = get_config("~/mymodule.cfg")
+        platforms = config.getlisting("build_platform")
+        labels = config.getlisting("build_labels")
+
+
+Values are separated by ',' in this case. They can be in one line or specified
+over multiple line.
+
+
+Multi line values
+-----------------
+
+You need to specify a list of values each in one line. The values can be
+really long and you want not allow them to be at the same line because of
+readability.
+In this case you can use the ``getlines`` converter provided out of the box.
+
+
+Example:
+
+.. code-block:: INI
+
+    [mymodule]
+    requirements =
+        StdConfigparser >= 0.6
+        Python >= 2.7
+        FancyXMLHTMLParser
+        Sphinx
+
+
+In your program code use the ``getlines`` method of configparser. It returns
+a list with the values for you.
+
+
+.. code-block:: Python
+
+    from stdconfigparser import StdConfigParser
+
+    def get_config(path):
+        parser = StdConfigParser()
+        parser.read(path)
+        config = parser["mymodule"]
+        return config
+
+    def main():
+        config = get_config("~/mymodule.cfg")
+        requirements = config.getlines("requirements")
+
+With this you get a list of your requirements for every line one entry.
+No need to specify a separator.
+
 
 Multiple sections
 -----------------
@@ -1049,6 +1082,7 @@ to use a namespace then. Something like ``[mymodule.env.py33]`` for a section.
 And access the section with ``envprefix = "mymodule.env."``. Basic technique
 described in next example.
 
+
 Multiple sections namespace package
 -----------------------------------
 
@@ -1099,6 +1133,58 @@ The main application can also list all modules of the namespace.
 Interpolation and defaults
 --------------------------
 
+You want to have default values for most of your configuration options.
+But you share the configuration with other applications and the defaults are
+only in your section.
+A good solution for this is to use interpolation with your defaults in an
+dictionary with your section. Read your defaults before you read the
+configuration from a file or other source.
+
+Use the global defaults to only specify common stuff for all sections.
+Something like the configuration directory. Your default values can than
+use this in combination with interpolation to set default values in a section.
+
+.. code-block:: Python
+
+    my_defaults = {"mymodule": {
+      "project_dir": "${config_dir}/..",
+      "log_dir": "${project_dir}/log",
+      "data_dir": "${project_dir}/data",
+      "temp_dir": "${project_dir}/tmp",
+    }}
+
+
+.. code-block:: INI
+
+    [mymodule]
+    project_dir = /usr/home/special/project
+
+
+.. code-block:: Python
+
+    import os
+    from stdconfigparser import StdConfigParser
+
+    def get_config(path):
+        config_dir = os.path.abspath(os.path.dirname(path))
+        parser = StdConfigParser(defaults={"config_dir": config_dir})
+        parser.read_dict(my_defaults)
+        parser.read(path)
+        config = parser["mymodule"]
+        return config
+
+    def main():
+        config = get_config("~/mymodule.cfg")
+        data_dir = config.get("data_dir")
+
+Here you set only one global default, your 'config_dir'. This is then
+used in your default configuration for your section but only by interpolate
+values. You read in your default configuration dictionary before the
+configuration form the file. With this order they act as default values.
+The user can overwrite what is needed in the configuration file. If nothing is
+overwritten your defaults are used.
+
+
 Config file with interpolation
 ------------------------------
 
@@ -1133,8 +1219,8 @@ Use the defaults parameter to set the configuration directory.
         project_dir = config.get("project_dir")
 
 
-Environment
------------
+Environment information
+-----------------------
 
 The os environment information is needed in the configuration as as
 interpolation value.
@@ -1161,7 +1247,7 @@ overwriting in the configuration file. Can be used as a feature for testing.
     from stdconfigparser import StdConfigParser
 
     def get_config(path):
-        parser = StdConfigParser()
+        parser = StdConfigParser(interpolate=True)
         parser.read_dict({"os.environ": os.environ}, "environment")
         parser.read(path)
         config = parser["mymodule"]
@@ -1176,14 +1262,24 @@ your application. Better is to only provide a defined set of variables
 as defaults for the configuration.
 
 
-Complex
--------
+Additional converter, getjson
+-----------------------------
 
-Your users are mainly programmers and already familiar with JSON.
-You cannot resist and want to provide powerful features at configuration level.
-All this is fine for JSON syntax only keep in mind the configuration parsing
-rules apply first. The value indent must be correct even if JSON normally allows
-a more syntax formats.
+Sometimes, you have the need for more complex configuration
+structure. If you cannot avoid it and you really need something like a deeper
+structure or you have demand of types in your value lists I have also a solution
+for it. The solution is JSON. Why? What?
+Yes in this complex case I don't reinvent the wheel. Most users for a
+Python application are already familiar to the Python syntax and JSON is nearly
+similar. It is documented and easy to read/write.
+But you may ask, I want to comment complex stuff. The answer is, yes you can.
+Comments are handled by the ConfigParser in a normal way. Only line comments are
+allowed. Also empty lines. But value indent must also be kept for JSON values.
+Even if you use JSON values keep in mind the value is handled as multi line
+string by the parser before you get it.
+
+
+Example:
 
 .. code-block:: INI
 
@@ -1211,7 +1307,73 @@ a more syntax formats.
         config = get_config("~/mymodule.cfg")
         value = config.getjson("mymodule", "json_value")
         list_value = config.getjson("mymodule", "json_list")
-        complex = config.getjson("mymodule", "complex")
+        complex_value = config.getjson("mymodule", "complex")
+
+
+As you can see, these are still valid string values but if you use
+the "getjson" method of the parser, the value will be parsed for you
+and you get back the Python values. Comments are allowed, empty lines also
+as known by multi line configuration values. The user has the possibility
+to write it in a readable way. The application let Python parse the syntax in
+a safe way. This is really powerful. You can do nearly all complex configuration
+needs with it. Even to complex for the user. Keep this in mind.
+If you know this, use it only for the configuration keys where it is really
+needed. You have the power but your users must be able to handle it.
+
+
+Additional converter, getliteral
+--------------------------------
+
+You want to provide really powerful configuration values to your users.
+Only Python 3 is used and you know your users are experienced Python developers
+and can handle this complexity. Really only in this case!
+Then you can add a converter based on Pythons ``ast.literal_eval`` function.
+In other cases try first to use the JSON converter for complex stuff.
+
+Why only for Python 3? Because of Unicode and the way it is handled in Python 2.
+You don't want to specify every string in your configuration with
+``u"my string"`` to do it right.
+
+
+Example:
+
+
+.. code-block:: ini
+
+    [section]
+    key = ['some value in a list']
+
+    object = {"data": "in a dict", "x": 10, 1:'1'}
+
+    now_it_gets_complex = {
+        "key": "value",
+        # with comment
+        "set": {1, 3, 4}, # in line comment handled in value
+        "tuple": (1,2,3),
+        "None": None,
+        }
+
+
+.. code-block:: Python
+
+    import ast
+    from stdconfigparser import StdConfigParser
+
+    def get_config(path):
+        config = StdConfigParser(converters={"literal": ast.literal_eval})
+        config.read(path)
+        return config
+
+    def main():
+        config = get_config("~/mymodule.cfg")
+        value = config.getliteral("section", "object")
+        list_value = config.getliteral("section", "key")
+        complex_value = config.getjson("section", "now_it_gets_complex")
+
+
+With this additional converter you have can have really complex values in
+your configuration. Even to complex. So be careful and extend only if you
+need it and your users are able to handle it.
 
 
 Config file includes
@@ -1269,3 +1431,8 @@ is what most users expect.
         config = get_config("~/mymodule.cfg")
         project_dir = config.get("myproject", "project_dir")
 
+
+In this example the specified configuration files are read in order the last
+can overwrite stuff from others, your main config file options win.
+If a specified config include is not there it is silently ignored.
+Optionally you can get the read files list and log it or other stuff.
