@@ -1,7 +1,7 @@
 
 PY=./venv/py35/bin/python
 
-.PHONY: docu test dist test_style
+.PHONY: docu test dist test_style build
 
 docu:
 	$(PY) -m sphinx -b html ./docu ./build/docu/html
@@ -12,7 +12,7 @@ test:
 teststyle:
 	$(PY) -m flake8 stdconfigparser.py
 
-dist:
+build:
 	$(PY) setup.py sdist bdist_wheel
 
 clean:
@@ -22,8 +22,10 @@ clean:
 	rm -rf .cache/*
 	rm -rf StdConfigParser.egg-info/*
 
-release: clean test teststyle docu dist
+dist: test teststyle docu build
+
+release: clean dist
 	$(PY) -m twine upload dist/*
 
-testrelease: clean test teststyle docu dist
+testrelease: clean dist
 	$(PY) -m twine upload -r pypitest dist/*
