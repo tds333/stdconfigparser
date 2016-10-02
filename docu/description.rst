@@ -15,7 +15,7 @@ An Example is better than a lot of words:
 .. code-block:: ini
 
     [section]
-    key = value
+    option = value
 
     envlist = env1,env2,env3
 
@@ -27,7 +27,7 @@ An Example is better than a lot of words:
 
     [other_section]
     # comment, optional interpolation
-    name = ${section:key}
+    name = ${section:option}
 
 
 As you can see a lot is possible with simple INI style syntax.
@@ -37,8 +37,9 @@ Optionally the interpolation can be enabled.
 A standard configuration format for all of your applications.
 Easy to embed or use as a standalone module. All distributed as one file.
 
-You can also use this module in Python 2 as a back port of the Python 3
-configuration parser module. Even if you don't want to use the StdConfigParser
+You can also use this module in Python 2 or 3.3, 3.4 as a back port of the
+Python 3.5 configuration parser module.
+Even if you don't want to use the StdConfigParser
 class. It is the only back ported module distributed as single file. Easy
 to vendor and distribute it as private part of your application.
 If you don't need the extra power of the converters, keep in mind they are
@@ -47,6 +48,10 @@ optional, everything is also usable for the simplest key value configuration.
 `Documentation <http://stdconfigparser.readthedocs.org/>`_
 
 `Source code <https://github.com/tds333/stdconfigparser>`_
+
+Note: In configparser the name 'option' is used to specify a case insensitive
+      key. So sometimes the name key is used to describe a option. In the
+      documentation they mean the same.
 
 
 Human readable configuration
@@ -103,15 +108,15 @@ Features
 - Extends only the value part to support more advanced needs.
 - Reduced to have only one preferable way to write something.
   In this case use the most widely used characters (= to assign, # to comment)
-- Keys are case insensitive, so forgive the user if he/she did not know the
-  exact spelling
+- Options (keys) are case insensitive, so forgive the user if he/she did not
+  know the exact spelling
 - Flat structure, only one level. (no sections in sections)
 - Allow complex stuff but only if needed. Start simple but can scale.
 - The programmer decides how complex a value is and how to parse a value
   for the user it is still a simple string.
-- The user must only know sections, comments, keys, values and multi line values.
+- The user must only know sections, comments, options, values.
   Nothing more is needed to get the configuration syntax right.
-- Substitution is optionally supported by the "${KEY}" interpolation format.
+- Substitution is optionally supported by the "${option}" interpolation format.
 
 Ultimate goal: Become the standard way for Python applications to configure
 something and be the one interchangeable user readable configuration format.
@@ -161,8 +166,9 @@ JSON - Good interchangeable serialization format but not so good for
        for simple configuration needs. To use it as a configuration syntax it
        must be extended and you create your own new format no longer compatible
        with bare JSON.
-       But can be usable to specify complex values. It is widely know and the
-       basic syntax is easy. Good parser support for a lot of languages.
+       But in exceptional cases can be usable to specify complex values.
+       It is widely know and the basic syntax is simple and easy to get right.
+       Good parser support for a lot of languages.
 
 XML - Verbose and the user must know how to program. Open close tags needed,
       other stuff only in attributes. Allows deep and complex structures by
@@ -178,7 +184,8 @@ for your needs write it for none programmer users in mind. Avoid deep nested
 structures and don't require knowledge from your users about dictionaries or
 lists and nested structures. Also not about how to format integer or strings
 in the syntax. Really, keep it simple. Every format listed above has
-shortcomings in one or another point.
+shortcomings in one or another point. A configuration user wants to write simple
+text easy readable to specify what the program should do. Nothing more.
 
 
 My configuration history (in short)
@@ -189,21 +196,24 @@ The worst human readable ever was XML. Some years ago with the XML hype arising
 my first choice was also to do new configuration in XML. But XML is not good for
 human readable configuration stuff. Also not as a script like language. It
 may be a good data exchange format but solves not every problem on earth.
-And really solves nothing in the are like configuration and scripting.
+And really solves nothing in the area like configuration and scripting.
 Good luck, I invented never a big enough XML configuration format only had to
 use some. One of my first configuration style formats I had to use was the
 INI style based format. Most used on Windows years ago even before the registry
 arises. I used a lot of formats starting from the Apache style config due to the
 Zope xml style config and nearly everything between. Have written some parsers
 for own invented config formats and also tried to invent the next best format
-capable to handle a lot of use cases.
+capable to handle a lot of use cases. Tried also to extend the INI format and
+add deeper structure and more features.
 But for all of this I have noticed the really first one is still one of the best.
 Why? It is simple. The simplest configuration format nearly every one understood
 from the beginning is something like you have a key and it has a value.
 Both are strings and have not special syntax to note it, like a hyphen.
 The INI style adds to this only something like sections. Which allows to have
-different configurations in one file. At the end of my configuration history I
-am back to the beginning. Simple key value with a bonus.
+different configurations in one file. Or to bring a simple structure to a bigger
+configuration.
+At the end of my configuration history
+I am back to the beginning. Simple key (option) value with a bonus.
 
 
 The specification
@@ -215,7 +225,7 @@ In short:
 
     [section]
     # comment
-    key = value
+    option = value
 
     multi_line_values =
         are indented by
@@ -367,16 +377,16 @@ installed modules. A good indicator for such a use case is if "myxml" is a
 namespace package.
 
 
-Keys (options)
+Options (keys)
 --------------
 
-Keys start at position one in a line and are all lower case. That said, it is
+Options start at position one in a line and are all lower case. That said, it is
 good to write them lower case in the configuration file because they will be
 lowered lated by the configuration parser. In your application you also will
 access them in lower case. For your user, they are case insensitive. This avoids
 confusion about should I use camel case for this key or must I use a big letter
-there. Keys are essential so be forgiving there is the motto.
-Also it is good to keep the allowed key names in the ASCII range.
+there. Options are essential so be forgiving there is the motto.
+Also it is good to keep the allowed option names in the ASCII range.
 I said start as position one in a line, the exact meaning is, ok indention is
 allowed also but if possible avoid it.
 
@@ -384,7 +394,7 @@ allowed also but if possible avoid it.
 .. code-block:: ini
 
     [section]
-    key = value
+    option = value
 
     AnotherKey = no good example because camel case but allowed
 
@@ -393,14 +403,13 @@ allowed also but if possible avoid it.
     long_key_with_different_words = Try to avoid but when needed use "_"
 
 
-Try to keep your keys lowercase if needed use the "_" as separator for words
+Try to keep your options lowercase if needed use the "_" as separator for words
 for better readability.
-If you have the seldom need to have a structure in your keys you can use
+If you have the seldom need to have a structure in your options you can use
 "/" between the words. With this you can build a tree like structure.
-All this is only a convention a key still is a simple string. It is up to
+All this is only a convention a option still is a simple string. It is up to
 the application to implement and document it.
-Don't use ":" in a key. Other INI file formats use this as key value separator
-and we want to avoid confusion here.
+Don't use ":" in a options. It is accepted as alternative separator to a value.
 
 
 Values
@@ -418,7 +427,7 @@ But to start simple:
 .. code-block:: ini
 
     [section]
-    key = value
+    option = value
     next_key = Value with spaces in the string
     integer = 1
     float = 1.5
@@ -491,7 +500,6 @@ For all of this, keep in mind, there can be a special section in a file called
 If you use the write method of the parser you will also see these defaults.
 
 
-
 Interpolation
 -------------
 
@@ -504,9 +512,9 @@ want to change the same value at 1000 places they will use it. It is also
 super elegant solution to provide and describe default values.
 
 One possible way is to have an option at the parser for it. But I want to
-have one standard way and not two ways. So I decided it is there.
-After this the decision for the format was really easy. We use simply the
-extended interpolation format of Python configparser module.
+have one standard way and not two ways. So I decided if you enable it there is
+one specified format for it.
+We use simply the extended interpolation format of Python configparser module.
 Interpolation for the configuration is simple a replace "this by that" at access
 time. It is not like a template at parsing time. Really when you access the
 key the replacement is done every time again when you access the key. No cache
@@ -518,8 +526,8 @@ understand the full power of it.
 Lot of other configuration solution do this wrong and prefer performance over
 up to date values, which is not what a user want.
 
-Enough text, the format is simple: ``${key}`` to insert the value of the key
-when accessing. Or over sections: ``${section:key}``
+Enough text, the format is simple: ``${option}`` to insert the value of the
+option when accessing. Or over sections: ``${section:option}``
 
 .. code-block:: ini
 

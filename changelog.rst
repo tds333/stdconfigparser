@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.7
+---
+
+- Allow ':' as option (key) value separator. Still the advice is to use '='
+  as default. But support the variant to parse more INI styles. Also ':' is
+  not allowed in a option name. Now this is explicit.
+
+
 0.6
 ---
 

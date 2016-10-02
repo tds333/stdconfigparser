@@ -24,7 +24,7 @@ Everything in one module easy to vendor or install no extra dependencies.
 Example config file::
 
     [section]
-    key = value
+    option = value
 
     envlisting = env1,env2,env3
 
@@ -35,4 +35,4 @@ Example config file::
 
     [other_section]
     # interpolation is a optional feature
-    name = ${section:key}-substitution
+    name = ${section:option}-substitution

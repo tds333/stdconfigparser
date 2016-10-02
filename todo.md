@@ -9,9 +9,11 @@
 - [X] Use flake8 for code checks
 - [X] Test against Python 2.7 and 3.5
 - [X] Add license file
-- [ ] Add test for code examples in documentation
-- [ ] Validate config examples in documentation
+- [X] Test against Python 3.3 and 3.4
+- [ ] Syntax and interface stability
+- [X] For later items use github issues and enter them
+- [ ] Move getjson to example section for a converter
 
 ## For later version
 
-- [ ] Add missing planned examples
+After 1.0 remove this file and use github issues to track needs.
