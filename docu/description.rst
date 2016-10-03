@@ -4,8 +4,7 @@ Introduction
 This module provides a StdConfigParser class a simple
 standard INI configuration parser with a specified format. All is based
 on the Python standard library configuration parser.
-For Python 2.7 it contains also a backport of the Python 3 ConfigurationParser
-class.
+For Python 2.7, 3.3, 3.4 it acts as backport of Python 3.5 configparser module.
 
 Additionally it extends the configuration parser with useful converter methods.
 They allow really powerful configurations by keeping all simple for the user.

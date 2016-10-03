@@ -8,7 +8,7 @@ The result is a simple well defined syntax for the INI file.
 See it as a preconfigured ConfigParser class for you.
 It allows interoperability in configuration between different projects.
 
-Also contains everything to be a backport of the ConfigParser from
+Also contains everything to be a backport of the configparser module from
 Python 3.5 to Python 2.7, 3.3, 3.4.
 
 Everything in one module easy to vendor or install no extra dependencies.
