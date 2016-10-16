@@ -66,6 +66,7 @@ def from_none(exc):
     exc.__suppress_context__ = True
     return exc
 
+
 # whole Python 2 implementation based on the backport of configparser
 # lot of stuff copied also from Python standard library implementation
 if PY2:
@@ -1453,6 +1454,7 @@ if PY2 or PY33 or PY34:
 # yes it is short, because the Python 3.5 configparser module provides a lot
 else:
     from configparser import *
+    from configparser import _UNSET, Error
     from collections import OrderedDict
 
 
