@@ -10,7 +10,7 @@ import pytest
 import json
 
 from stdconfigparser import (StdConfigParser, InterpolationMissingOptionError,
-                             ParsingError)
+                             ParsingError, MissingSectionHeaderError)
 
 
 def test_init():
@@ -54,6 +54,33 @@ def test_simple():
     assert "" == parser.get("more", "nokey", fallback="")
     assert "xyz" == parser.get("more", "nokey", vars={"nokey": "xyz"})
     assert "xyz" == parser.get("test", "key", vars={"key": "xyz"})
+
+
+def test_missing_section():
+    parser = StdConfigParser()
+    test = """
+    key = value
+    """
+    with pytest.raises(MissingSectionHeaderError):
+        parser.read_string(test)
+
+
+def test_default_section():
+    parser = StdConfigParser()
+    test = """
+    [DEFAULT]
+    key = vd
+    key2 = default
+    [test]
+    key = value
+    """
+    parser.read_string(test)
+    assert "value" == parser["test"]["key"]
+    assert "default" == parser["test"]["key2"]
+    assert "vd" == parser["DEFAULT"]["key"]
+    vars = {"key3": "three", "key2": "vars"}
+    assert "three" == parser.get("test", "key3", vars=vars)
+    assert "vars" == parser.get("test", "key2", vars=vars)
 
 
 def test_getlines():
