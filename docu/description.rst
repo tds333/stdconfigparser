@@ -1129,6 +1129,36 @@ The main application can also list all modules of the namespace.
                       if v.startswith(namespace_prefix)]
 
 
+Multiple sections no sharing with others
+----------------------------------------
+
+Your application is the only one using the configuration file. No sharing
+with other applications is needed. But you need a little bit structure
+to make the life for your users easier.
+In this case use the sections for a simple structure and name them as needed.
+
+
+.. code-block:: INI
+
+    [hosts]
+    aname = value1
+    bname = value2
+
+    [targets]
+    xname = valx
+    yname = valy
+
+    [logging]
+    level = debug
+    file = a.log
+    system = false
+
+
+The usage of this configuration is simple, access with the sections the
+special stuff. Parse the configuration file normally and use the full power
+of the configparser.
+
+
 Interpolation and defaults
 --------------------------
 
@@ -1421,9 +1451,9 @@ is what most users expect.
             if include.startswith("."):
                 include = os.path.abspath(os.path.join(config_dir, include))
             includes.append(include)
+        includes.append(path) # read origin as last config
         config = StdConfigParser()
         config.read(includes)
-        config.read_dict(main_config)
         return config
 
     def main():
@@ -1435,3 +1465,9 @@ In this example the specified configuration files are read in order the last
 can overwrite stuff from others, your main config file options win.
 If a specified config include is not there it is silently ignored.
 Optionally you can get the read files list and log it or other stuff.
+The main config file is read twice, first to get the includes and also
+as last file to overwrite other settings. You can optimize this to only read
+the main file once but keep in mind not to use read_dict method of config for
+this, because it uses items on the config and this evaluates all interpolations.
+This is not what you want. But a config file normally is not of gigabytes in
+size. Hence reading twice doesnÄt hurt.
