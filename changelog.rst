@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.8
+---
+
+- Improve documentation.
+- Add unit test from Python configparser.
+- Minor fixes.
+
 0.7
 ---
 
