@@ -833,8 +833,11 @@ Two converters are added by default:
 
 .. function:: getlines(section, option, raw=False, vars=None [, fallback])
 
-    Converts multi line values into a list of values. Each line is stripped.
-    Comments and empty lines are removed.
+    Converts multi line values into a list of values. Each line is fetched
+    without the indent. Comments and empty lines are removed.
+    But the line is returned as is and not striped. It can contain spaces
+    at the end or in front. If you need a striped result ``getlisting`` can
+    be used.
 
     Example::
 
@@ -954,6 +957,9 @@ Example:
     [mymodule]
     build_platforms = Linux, Windows, OSX
     build_labels = html, pdf, exe, shared
+    multiline_listing = a, stuff,
+        b, more stuff,
+        c, last element
 
 
 In your program code use the ``getlisting`` method of configparser. It returns
