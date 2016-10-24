@@ -103,7 +103,7 @@ def test_getlines_trim():
     test = """
     [test]
     multiline =
-        value 1
+        \tvalue 1\t
           value 2   """
     parser.read_string(test)
     lines = parser.getlines("test", "multiline")
