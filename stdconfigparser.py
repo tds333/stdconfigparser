@@ -52,7 +52,6 @@ __all__ = ["NoSectionError", "DuplicateOptionError", "DuplicateSectionError",
 
 
 import sys
-import json
 
 
 PY2 = sys.version_info[0] == 2
