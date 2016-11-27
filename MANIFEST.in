@@ -1,0 +1,3 @@
+include LICENSE Makefile
+recursive-include *.txt *.py *.rst
+prune build dist

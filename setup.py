@@ -11,7 +11,7 @@ version = versiondict["__version__"]
 #with open(os.path.join(basepath, "stdconfigparser.py")) as cfgparser:
 #    exec(cfgparser.read(), versiondict)
 
-with open(os.path.join(basepath, "readme.rst")) as readme:
+with open(os.path.join(basepath, "README.rst")) as readme:
     long_description = readme.read()
 
 setup(name='StdConfigParser',
