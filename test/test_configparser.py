@@ -452,6 +452,22 @@ boolean {0[0]} NO
                 },
             })
 
+    def test_invalid_multiline_value(self):
+        if sys.version_info[:2] <= (3, 5) and not sys.version_info[:2] == (2, 7):
+            self.skipTest('Only fixed in Python 3.6')
+        if self.allow_no_value:
+            self.skipTest('if no_value is allowed, ParsingError is not raised')
+        invalid = textwrap.dedent("""\
+            [DEFAULT]
+            test {0} test
+            invalid""".format(self.delimiters[0])
+        )
+        cf = self.newconfig()
+        with self.assertRaises(configparser.ParsingError):
+            cf.read_string(invalid)
+        self.assertEqual(cf.get('DEFAULT', 'test'), 'test')
+        self.assertEqual(cf['DEFAULT']['test'], 'test')
+
     def test_case_sensitivity(self):
         cf = self.newconfig()
         cf.add_section("A")

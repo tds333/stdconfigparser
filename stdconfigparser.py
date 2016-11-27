@@ -38,7 +38,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-__version__ = "0.9.dev0"
+__version__ = "0.9.dev1"
 
 __all__ = ["NoSectionError", "DuplicateOptionError", "DuplicateSectionError",
            "NoOptionError", "InterpolationError", "InterpolationDepthError",
@@ -1195,10 +1195,10 @@ if PY2 or PY33 or PY34:
                             # raised at the end of the file and will contain a
                             # list of all bogus lines
                             e = self._handle_error(e, fpname, lineno, line)
+            self._join_multiline_values()
             # if any parsing errors occurred, raise an exception
             if e:
                 raise e
-            self._join_multiline_values()
 
         def _join_multiline_values(self):
             defaults = self.default_section, self._defaults
