@@ -453,7 +453,7 @@ boolean {0[0]} NO
             })
 
     def test_invalid_multiline_value(self):
-        if sys.version_info[:2] <= (3, 5) and not sys.version_info[:2] == (2, 7):
+        if sys.version_info[:2] >= (3, 5) and not sys.version_info[:3] >= (3, 5, 3):
             self.skipTest('Only fixed in Python 3.6')
         if self.allow_no_value:
             self.skipTest('if no_value is allowed, ParsingError is not raised')
