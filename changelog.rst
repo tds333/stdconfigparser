@@ -7,6 +7,7 @@ Changelog
 - Remove unused import
 - Fix ConfigParser._read doesn't join multi-line values collected while
   reading if a ParsingError occured Python issue #24142
+- Improve sdist.
 
 
 0.8
