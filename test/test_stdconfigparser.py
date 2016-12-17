@@ -4,7 +4,6 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-from __future__ import unicode_literals
 
 import pytest
 import json
@@ -16,17 +15,17 @@ from stdconfigparser import (StdConfigParser, InterpolationMissingOptionError,
 def test_init():
     parser = StdConfigParser()
     assert parser
-    parser = StdConfigParser(defaults={"mydefault": "true"})
+    parser = StdConfigParser(defaults={u"mydefault": u"true"})
     assert parser
-    assert parser.getboolean("DEFAULT", "mydefault")
-    parser = StdConfigParser(converters={"bool": bool})
+    assert parser.getboolean(u"DEFAULT", u"mydefault")
+    parser = StdConfigParser(converters={u"bool": bool})
     assert parser
-    assert parser.getbool("DEFAULT", "notthere", fallback=True)
+    assert parser.getbool(u"DEFAULT", u"notthere", fallback=True)
 
 
 def test_simple():
     parser = StdConfigParser()
-    test = """
+    test = u"""
     [test]
     key = value
     key2: value2
@@ -41,24 +40,24 @@ def test_simple():
     empty=
     """
     parser.read_string(test)
-    assert "value" == parser.get("test", "key")
-    assert "value" == parser["test"]["key"]
-    assert "value2" == parser.get("test", "key2")
-    assert "value =" == parser.get("test", "key3")
-    assert "value:" == parser.get("test", "key4")
-    assert "= v" == parser.get("test:", "key")
-    assert ": v" == parser.get("test:", "key2")
-    assert "test=" in parser.sections()
-    assert "$" == parser.get("test=", "$")
-    assert "" == parser.get("more", "empty")
-    assert "" == parser.get("more", "nokey", fallback="")
-    assert "xyz" == parser.get("more", "nokey", vars={"nokey": "xyz"})
-    assert "xyz" == parser.get("test", "key", vars={"key": "xyz"})
+    assert u"value" == parser.get(u"test", u"key")
+    assert u"value" == parser[u"test"][u"key"]
+    assert u"value2" == parser.get(u"test", u"key2")
+    assert u"value =" == parser.get(u"test", u"key3")
+    assert u"value:" == parser.get(u"test", u"key4")
+    assert u"= v" == parser.get(u"test:", u"key")
+    assert u": v" == parser.get(u"test:", u"key2")
+    assert u"test=" in parser.sections()
+    assert u"$" == parser.get(u"test=", u"$")
+    assert u"" == parser.get(u"more", u"empty")
+    assert u"" == parser.get(u"more", u"nokey", fallback="")
+    assert u"xyz" == parser.get(u"more", u"nokey", vars={u"nokey": u"xyz"})
+    assert u"xyz" == parser.get(u"test", u"key", vars={u"key": u"xyz"})
 
 
 def test_missing_section():
     parser = StdConfigParser()
-    test = """
+    test = u"""
     key = value
     """
     with pytest.raises(MissingSectionHeaderError):
@@ -67,7 +66,7 @@ def test_missing_section():
 
 def test_default_section():
     parser = StdConfigParser()
-    test = """
+    test = u"""
     [DEFAULT]
     key = vd
     key2 = default
@@ -75,17 +74,17 @@ def test_default_section():
     key = value
     """
     parser.read_string(test)
-    assert "value" == parser["test"]["key"]
-    assert "default" == parser["test"]["key2"]
-    assert "vd" == parser["DEFAULT"]["key"]
-    vars = {"key3": "three", "key2": "vars"}
-    assert "three" == parser.get("test", "key3", vars=vars)
-    assert "vars" == parser.get("test", "key2", vars=vars)
+    assert u"value" == parser[u"test"][u"key"]
+    assert u"default" == parser[u"test"][u"key2"]
+    assert u"vd" == parser[u"DEFAULT"][u"key"]
+    vars = {u"key3": u"three", u"key2": u"vars"}
+    assert u"three" == parser.get(u"test", u"key3", vars=vars)
+    assert u"vars" == parser.get(u"test", u"key2", vars=vars)
 
 
 def test_getlines():
     parser = StdConfigParser()
-    test = """
+    test = u"""
     [test]
     multiline = 1
         2
@@ -93,56 +92,56 @@ def test_getlines():
         4
     """
     parser.read_string(test)
-    lines = parser.getlines("test", "multiline")
+    lines = parser.getlines(u"test", u"multiline")
     assert len(lines) > 0
     assert [str(i) for i in range(1, 5)] == lines
 
 
 def test_getlines_trim():
     parser = StdConfigParser()
-    test = """
+    test = u"""
     [test]
     multiline =
         \tvalue 1\t
           value 2   """
     parser.read_string(test)
-    lines = parser.getlines("test", "multiline")
+    lines = parser.getlines(u"test", u"multiline")
     assert len(lines) > 0
-    assert ["value 1", "value 2"] == lines
+    assert [u"value 1", u"value 2"] == lines
 
 
 def test_getlisting():
     parser = StdConfigParser()
-    test = """
+    test = u"""
     [test]
     listing = value 1,value 2, value 3 , v4
     list_empty = v1,,v2, ,v3
     """
     parser.read_string(test)
-    li = parser.getlisting("test", "listing")
+    li = parser.getlisting(u"test", u"listing")
     assert len(li) > 0
-    assert ["value 1", "value 2", "value 3", "v4"] == li
-    li = parser.getlisting("test", "list_empty")
-    assert ["v1", "v2", "v3"] == li
+    assert [u"value 1", u"value 2", u"value 3", u"v4"] == li
+    li = parser.getlisting(u"test", u"list_empty")
+    assert [u"v1", u"v2", u"v3"] == li
 
 
 def test_getlisting_multi():
     parser = StdConfigParser()
-    test = """
+    test = u"""
     [test]
     listing = value 1,
         value 2, value 3
          , v4
     """
     parser.read_string(test)
-    li = parser.getlisting("test", "listing")
+    li = parser.getlisting(u"test", u"listing")
     assert len(li) > 0
-    assert ["value 1", "value 2", "value 3", "v4"] == li
+    assert [u"value 1", u"value 2", u"value 3", u"v4"] == li
 
 
 def test_getjson():
-    parser = StdConfigParser(converters={"json": json.loads})
-    test = """
+    parser = StdConfigParser(converters={u"json": json.loads})
+    test = u"""
     [test]
     list = [1,2,3, "4"]
     object = {"a": "val b", "b": 1.7}
@@ -151,17 +150,17 @@ def test_getjson():
     float = 3.14
     """
     parser.read_string(test)
-    sec = parser["test"]
-    assert sec.getjson("list") == [1,2,3, "4"]
-    assert sec.getjson("object") == {"a": "val b", "b": 1.7}
-    assert sec.getjson("string") == "xyz"
-    assert sec.getjson("number") == 10000000
-    assert sec.getjson("float") == 3.14
+    sec = parser[u"test"]
+    assert sec.getjson(u"list") == [1,2,3, u"4"]
+    assert sec.getjson(u"object") == {u"a": u"val b", u"b": 1.7}
+    assert sec.getjson(u"string") == u"xyz"
+    assert sec.getjson(u"number") == 10000000
+    assert sec.getjson(u"float") == 3.14
 
 
 def test_interpolation():
     parser = StdConfigParser(interpolate=True)
-    test = """
+    test = u"""
     [DEFAULT]
     a = 100
     [test]
@@ -176,20 +175,20 @@ def test_interpolation():
     y = 2
     """
     parser.read_string(test)
-    sec = parser["test"]
-    assert sec.getint("x") == 0
-    assert sec["x"] == "0"
-    assert sec["value_a"] == "100"
-    assert sec["value_x"] == "0"
-    assert sec["value_ix"] == "1"
-    assert sec["value_iy"] == "2"
+    sec = parser[u"test"]
+    assert sec.getint(u"x") == 0
+    assert sec[u"x"] == u"0"
+    assert sec[u"value_a"] == u"100"
+    assert sec[u"value_x"] == u"0"
+    assert sec[u"value_ix"] == u"1"
+    assert sec[u"value_iy"] == u"2"
     with pytest.raises(InterpolationMissingOptionError):
-        sec["value_y"]
+        sec[u"value_y"]
 
 
 def test_sectioninterpolation():
     parser = StdConfigParser(interpolate=True)
-    test = """
+    test = u"""
     [test]
     x = 0
     value_x = ${x}
@@ -202,19 +201,19 @@ def test_sectioninterpolation():
     s = 9
     """
     parser.read_string(test)
-    sec = parser["test"]
-    assert sec.getint("x") == 0
-    assert sec["x"] == "0"
-    assert sec["value_x"] == "0"
-    assert sec["value_ix"] == "1"
+    sec = parser[u"test"]
+    assert sec.getint(u"x") == 0
+    assert sec[u"x"] == u"0"
+    assert sec[u"value_x"] == u"0"
+    assert sec[u"value_ix"] == u"1"
     with pytest.raises(InterpolationMissingOptionError):
-        sec["value_iy"]
-    assert sec["value_is"] == "9"
+        sec[u"value_iy"]
+    assert sec[u"value_is"] == u"9"
 
 
 def test_conv_error():
     parser = StdConfigParser()
-    test = """
+    test = u"""
     [test]
     int = 100
     bool = true
@@ -222,26 +221,26 @@ def test_conv_error():
     float = 3.14
     """
     parser.read_string(test)
-    sec = parser["test"]
-    assert sec.getint("int") == 100
+    sec = parser[u"test"]
+    assert sec.getint(u"int") == 100
     with pytest.raises(ValueError):
-        assert sec.getint("string")
+        assert sec.getint(u"string")
     with pytest.raises(ValueError):
-        assert sec.getfloat("string")
+        assert sec.getfloat(u"string")
     with pytest.raises(ValueError):
-        assert sec.getboolean("string")
+        assert sec.getboolean(u"string")
 
 
 def test_ParsingError():
     parser = StdConfigParser()
-    test = """
+    test = u"""
     [test]
     int @ 100
     """
     with pytest.raises(ParsingError):
       parser.read_string(test)
     parser = StdConfigParser()
-    test = """
+    test = u"""
     [test
     ]
     """
@@ -250,7 +249,7 @@ def test_ParsingError():
 
 
 def test_complex():
-    example = """
+    example = u"""
 [mysection]
 a = b
 list = [1,
@@ -315,24 +314,24 @@ not_invalid =
   ["a", "b"]
 """
 
-    parser = StdConfigParser(converters={"json": json.loads}, interpolate=True)
+    parser = StdConfigParser(converters={u"json": json.loads}, interpolate=True)
     parser.read_string(example)
-    assert parser.get("mysection", "name") == "My troublesome name"
-    assert parser.get("section2", "name2") == "My troublesome name"
-    assert parser.getjson("mysection", "dict") == {"a": 1, "b": 2}
-    #assert parser.getjson("mysection", "list") == []
-    #assert parser.getlines("mysection", "multiline") == []
-    assert parser.get("sec.two", "name") == "bla"
-    assert parser.get("my two", "name") == "two"
-    assert parser.get("my t6", "name") == "one"
-    assert parser.getjson("json", "list") == [1,2,3]
-    assert parser.getjson("json", "object") == {"a": "myval", "b": "otherval"}
-    assert parser.getjson("json", "with_comment") == [1, "200", "400", True,
+    assert parser.get(u"mysection", u"name") == u"My troublesome name"
+    assert parser.get(u"section2", u"name2") == u"My troublesome name"
+    assert parser.getjson(u"mysection", u"dict") == {u"a": 1, u"b": 2}
+    #assert parser.getjson(u"mysection", u"list") == []
+    #assert parser.getlines(u"mysection", u"multiline") == []
+    assert parser.get(u"sec.two", u"name") == u"bla"
+    assert parser.get(u"my two", u"name") == u"two"
+    assert parser.get(u"my t6", u"name") == u"one"
+    assert parser.getjson(u"json", u"list") == [1,2,3]
+    assert parser.getjson(u"json", u"object") == {u"a": u"myval", u"b": u"otherval"}
+    assert parser.getjson(u"json", u"with_comment") == [1, u"200", u"400", True,
                                                       False, None, 3.14,
-                                                      {"another": 5,
-                                                       "second": "bla"}]
-    assert parser.getjson("json", "not_invalid") == ["a", "b"]
-    assert parser.getjson("json", "invalid", fallback="not found") == "not found"
-    assert [section.split()[1] for section in parser if section.startswith("my ")] ==\
-           ["one", "two", "t3", "t4", "t5", "t6"]
+                                                      {u"another": 5,
+                                                       u"second": u"bla"}]
+    assert parser.getjson(u"json", u"not_invalid") == [u"a", u"b"]
+    assert parser.getjson(u"json", u"invalid", fallback="not found") == u"not found"
+    assert [section.split()[1] for section in parser if section.startswith(u"my ")] ==\
+           [u"one", u"two", u"t3", u"t4", u"t5", u"t6"]
 
