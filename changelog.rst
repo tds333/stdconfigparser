@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.0
+---
+
+- Support Python 3.6
+
+
 0.9
 ---
 
