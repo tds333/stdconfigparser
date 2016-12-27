@@ -35,6 +35,7 @@ of code.
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from __future__ import unicode_literals
 
 
 __version__ = "1.0.dev0"
@@ -87,10 +88,10 @@ if PY2:
 
     # stuff from backports helpers
 
-    str = type(u'str') # same as str = unicode because of __future__.unicode_literals
+    str = type('str') # same as str = unicode because of __future__.unicode_literals
 
     # constants
-    DEFAULTSECT = u"DEFAULT"
+    DEFAULTSECT = "DEFAULT"
 
     MAX_INTERPOLATION_DEPTH = 10
 
@@ -256,7 +257,7 @@ if PY2 or PY33 or PY34:
         """Raised when no section matches a requested option."""
 
         def __init__(self, section):
-            Error.__init__(self, u'No section: %r' % (section,))
+            Error.__init__(self, 'No section: %r' % (section,))
             self.section = section
             self.args = (section, )
 
@@ -270,17 +271,17 @@ if PY2 or PY33 or PY34:
         """
 
         def __init__(self, section, source=None, lineno=None):
-            msg = [repr(section), u" already exists"]
+            msg = [repr(section), " already exists"]
             if source is not None:
-                message = [u"While reading from ", repr(source)]
+                message = ["While reading from ", repr(source)]
                 if lineno is not None:
-                    message.append(u" [line {0:2d}]".format(lineno))
-                message.append(u": section ")
+                    message.append(" [line {0:2d}]".format(lineno))
+                message.append(": section ")
                 message.extend(msg)
                 msg = message
             else:
-                msg.insert(0, u"Section ")
-            Error.__init__(self, u"".join(msg))
+                msg.insert(0, "Section ")
+            Error.__init__(self, "".join(msg))
             self.section = section
             self.source = source
             self.lineno = lineno
@@ -295,18 +296,18 @@ if PY2 or PY33 or PY34:
         """
 
         def __init__(self, section, option, source=None, lineno=None):
-            msg = [repr(option), u" in section ", repr(section),
-                   u" already exists"]
+            msg = [repr(option), " in section ", repr(section),
+                   " already exists"]
             if source is not None:
-                message = [u"While reading from ", repr(source)]
+                message = ["While reading from ", repr(source)]
                 if lineno is not None:
-                    message.append(u" [line {0:2d}]".format(lineno))
-                message.append(u": option ")
+                    message.append(" [line {0:2d}]".format(lineno))
+                message.append(": option ")
                 message.extend(msg)
                 msg = message
             else:
-                msg.insert(0, u"Option ")
-            Error.__init__(self, u"".join(msg))
+                msg.insert(0, "Option ")
+            Error.__init__(self, "".join(msg))
             self.section = section
             self.option = option
             self.source = source
@@ -318,7 +319,7 @@ if PY2 or PY33 or PY34:
         """A requested option was not found."""
 
         def __init__(self, option, section):
-            Error.__init__(self, u"No option %r in section: %r" %
+            Error.__init__(self, "No option %r in section: %r" %
                            (option, section))
             self.option = option
             self.section = section
@@ -339,9 +340,9 @@ if PY2 or PY33 or PY34:
         """A string substitution required a setting which was not available."""
 
         def __init__(self, option, section, rawval, reference):
-            msg = (u"Bad value substitution: option {0!r} in section {1!r} contains "
-                   u"an interpolation key {2!r} which is not a valid option name. "
-                   u"Raw value: {3!r}".format(option, section, reference, rawval))
+            msg = ("Bad value substitution: option {0!r} in section {1!r} contains "
+                   "an interpolation key {2!r} which is not a valid option name. "
+                   "Raw value: {3!r}".format(option, section, reference, rawval))
             InterpolationError.__init__(self, option, section, msg)
             self.reference = reference
             self.args = (option, section, rawval, reference)
@@ -359,10 +360,10 @@ if PY2 or PY33 or PY34:
         """Raised when substitutions are nested too deeply."""
 
         def __init__(self, option, section, rawval):
-            msg = (u"Recursion limit exceeded in value substitution: option {0!r} "
-                   u"in section {1!r} contains an interpolation key which "
-                   u"cannot be substituted in {2} steps. Raw value: {3!r}"
-                   u"".format(option, section, MAX_INTERPOLATION_DEPTH,
+            msg = ("Recursion limit exceeded in value substitution: option {0!r} "
+                   "in section {1!r} contains an interpolation key which "
+                   "cannot be substituted in {2} steps. Raw value: {3!r}"
+                   "".format(option, section, MAX_INTERPOLATION_DEPTH,
                              rawval))
             InterpolationError.__init__(self, option, section, msg)
             self.args = (option, section, rawval)
@@ -375,13 +376,13 @@ if PY2 or PY33 or PY34:
             # Exactly one of `source'/`filename' arguments has to be given.
             # `filename' kept for compatibility.
             if filename and source:
-                raise ValueError(u"Cannot specify both `filename' and `source'. "
-                                 u"Use `source'.")
+                raise ValueError("Cannot specify both `filename' and `source'. "
+                                 "Use `source'.")
             elif not filename and not source:
-                raise ValueError(u"Required argument `source' not given.")
+                raise ValueError("Required argument `source' not given.")
             elif filename:
                 source = filename
-            Error.__init__(self, u"Source contains parsing errors: %r" % source)
+            Error.__init__(self, 'Source contains parsing errors: %r' % source)
             self.source = source
             self.errors = []
             self.args = (source, )
@@ -390,8 +391,8 @@ if PY2 or PY33 or PY34:
         def filename(self):
             """Deprecated, use `source'."""
             warnings.warn(
-                u"The 'filename' attribute will be removed in future versions.  "
-                u"Use 'source' instead.",
+                "The 'filename' attribute will be removed in future versions.  "
+                "Use 'source' instead.",
                 DeprecationWarning, stacklevel=2
             )
             return self.source
@@ -400,15 +401,15 @@ if PY2 or PY33 or PY34:
         def filename(self, value):
             """Deprecated, user `source'."""
             warnings.warn(
-                u"The 'filename' attribute will be removed in future versions.  "
-                u"Use 'source' instead.",
+                "The 'filename' attribute will be removed in future versions.  "
+                "Use 'source' instead.",
                 DeprecationWarning, stacklevel=2
             )
             self.source = value
 
         def append(self, lineno, line):
             self.errors.append((lineno, line))
-            self.message += u'\n\t[line %2d]: %s' % (lineno, line)
+            self.message += '\n\t[line %2d]: %s' % (lineno, line)
 
 
     class MissingSectionHeaderError(ParsingError):
@@ -417,7 +418,7 @@ if PY2 or PY33 or PY34:
         def __init__(self, filename, lineno, line):
             Error.__init__(
                 self,
-                u'File contains no section headers.\nfile: %r, line: %d\n%r' %
+                'File contains no section headers.\nfile: %r, line: %d\n%r' %
                 (filename, lineno, line))
             self.source = filename
             self.lineno = lineno
@@ -465,11 +466,11 @@ if PY2 or PY33 or PY34:
             return ''.join(L)
 
         def before_set(self, parser, section, option, value):
-            tmp_value = value.replace(u'%%', u'') # escaped percent signs
-            tmp_value = self._KEYCRE.sub(u'', tmp_value) # valid syntax
-            if u'%' in tmp_value:
-                raise ValueError(u"invalid interpolation syntax in %r at "
-                                 u"position %d" % (value, tmp_value.find(u'%')))
+            tmp_value = value.replace('%%', '') # escaped percent signs
+            tmp_value = self._KEYCRE.sub('', tmp_value) # valid syntax
+            if '%' in tmp_value:
+                raise ValueError("invalid interpolation syntax in %r at "
+                                 "position %d" % (value, tmp_value.find('%')))
             return value
 
         def _interpolate_some(self, parser, option, accum, rest, section, map,
@@ -478,7 +479,7 @@ if PY2 or PY33 or PY34:
             if depth > MAX_INTERPOLATION_DEPTH:
                 raise InterpolationDepthError(option, section, rawval)
             while rest:
-                p = rest.find(u"%")
+                p = rest.find("%")
                 if p < 0:
                     accum.append(rest)
                     return
@@ -487,14 +488,14 @@ if PY2 or PY33 or PY34:
                     rest = rest[p:]
                 # p is no longer used
                 c = rest[1:2]
-                if c == u"%":
-                    accum.append(u"%")
+                if c == "%":
+                    accum.append("%")
                     rest = rest[2:]
-                elif c == u"(":
+                elif c == "(":
                     m = self._KEYCRE.match(rest)
                     if m is None:
                         raise InterpolationSyntaxError(option, section,
-                              u"bad interpolation variable reference %r" % rest)
+                              "bad interpolation variable reference %r" % rest)
                     var = parser.optionxform(m.group(1))
                     rest = rest[m.end():]
                     try:
@@ -502,7 +503,7 @@ if PY2 or PY33 or PY34:
                     except KeyError:
                         raise from_none(InterpolationMissingOptionError(
                             option, section, rawval, var))
-                    if u"%" in v:
+                    if "%" in v:
                         self._interpolate_some(parser, option, accum, v,
                                                section, map, depth + 1)
                     else:
@@ -510,8 +511,8 @@ if PY2 or PY33 or PY34:
                 else:
                     raise InterpolationSyntaxError(
                         option, section,
-                        u"'%%' must be followed by '%%' or '(', "
-                        u"found: %r" % (rest,))
+                        "'%%' must be followed by '%%' or '(', "
+                        "found: %r" % (rest,))
 
 
     class ExtendedInterpolation(Interpolation):
@@ -526,11 +527,11 @@ if PY2 or PY33 or PY34:
             return ''.join(L)
 
         def before_set(self, parser, section, option, value):
-            tmp_value = value.replace(u'$$', u'') # escaped dollar signs
-            tmp_value = self._KEYCRE.sub(u'', tmp_value) # valid syntax
-            if u'$' in tmp_value:
-                raise ValueError(u"invalid interpolation syntax in %r at "
-                                 u"position %d" % (value, tmp_value.find('$')))
+            tmp_value = value.replace('$$', '') # escaped dollar signs
+            tmp_value = self._KEYCRE.sub('', tmp_value) # valid syntax
+            if '$' in tmp_value:
+                raise ValueError("invalid interpolation syntax in %r at "
+                                 "position %d" % (value, tmp_value.find('$')))
             return value
 
         def _interpolate_some(self, parser, option, accum, rest, section, map,
@@ -539,7 +540,7 @@ if PY2 or PY33 or PY34:
             if depth > MAX_INTERPOLATION_DEPTH:
                 raise InterpolationDepthError(option, section, rawval)
             while rest:
-                p = rest.find(u"$")
+                p = rest.find("$")
                 if p < 0:
                     accum.append(rest)
                     return
@@ -548,14 +549,14 @@ if PY2 or PY33 or PY34:
                     rest = rest[p:]
                 # p is no longer used
                 c = rest[1:2]
-                if c == u"$":
-                    accum.append(u"$")
+                if c == "$":
+                    accum.append("$")
                     rest = rest[2:]
-                elif c == u"{":
+                elif c == "{":
                     m = self._KEYCRE.match(rest)
                     if m is None:
                         raise InterpolationSyntaxError(option, section,
-                              u"bad interpolation variable reference %r" % rest)
+                              "bad interpolation variable reference %r" % rest)
                     path = m.group(1).split(':')
                     rest = rest[m.end():]
                     sect = section
@@ -571,11 +572,11 @@ if PY2 or PY33 or PY34:
                         else:
                             raise InterpolationSyntaxError(
                                 option, section,
-                                u"More than one ':' found: %r" % (rest,))
+                                "More than one ':' found: %r" % (rest,))
                     except (KeyError, NoSectionError, NoOptionError):
                         raise from_none(InterpolationMissingOptionError(
-                            option, section, rawval, u":".join(path)))
-                    if u"$" in v:
+                            option, section, rawval, ":".join(path)))
+                    if "$" in v:
                         self._interpolate_some(parser, opt, accum, v, sect,
                                                dict(parser.items(sect, raw=True)),
                                                depth + 1)
@@ -584,8 +585,8 @@ if PY2 or PY33 or PY34:
                 else:
                     raise InterpolationSyntaxError(
                         option, section,
-                        u"'$' must be followed by '$' or '{', "
-                        u"found: %r" % (rest,))
+                        "'$' must be followed by '$' or '{', "
+                        "found: %r" % (rest,))
 
 
     class LegacyInterpolation(Interpolation):
@@ -599,7 +600,7 @@ if PY2 or PY33 or PY34:
             depth = MAX_INTERPOLATION_DEPTH
             while depth:                    # Loop through this until it's done
                 depth -= 1
-                if value and u"%(" in value:
+                if value and "%(" in value:
                     replace = functools.partial(self._interpolation_replace,
                                                 parser=parser)
                     value = self._KEYCRE.sub(replace, value)
@@ -610,7 +611,7 @@ if PY2 or PY33 or PY34:
                             option, section, rawval, e.args[0]))
                 else:
                     break
-            if value and u"%(" in value:
+            if value and "%(" in value:
                 raise InterpolationDepthError(option, section, rawval)
             return value
 
@@ -623,7 +624,7 @@ if PY2 or PY33 or PY34:
             if s is None:
                 return match.group()
             else:
-                return u"%%(%s)s" % parser.optionxform(s)
+                return "%%(%s)s" % parser.optionxform(s)
 
 
     class RawConfigParser(MutableMapping):
@@ -657,22 +658,22 @@ if PY2 or PY33 or PY34:
         # Compiled regular expression for matching sections
         SECTCRE = re.compile(_SECT_TMPL, re.VERBOSE)
         # Compiled regular expression for matching options with typical separators
-        OPTCRE = re.compile(_OPT_TMPL.format(delim=u"=|:"), re.VERBOSE)
+        OPTCRE = re.compile(_OPT_TMPL.format(delim="=|:"), re.VERBOSE)
         # Compiled regular expression for matching options with optional values
         # delimited using typical separators
-        OPTCRE_NV = re.compile(_OPT_NV_TMPL.format(delim=u"=|:"), re.VERBOSE)
+        OPTCRE_NV = re.compile(_OPT_NV_TMPL.format(delim="=|:"), re.VERBOSE)
         # Compiled regular expression for matching leading whitespace in a line
         NONSPACECRE = re.compile(r"\S")
         # Possible boolean values in the configuration.
-        BOOLEAN_STATES = {u'1': True, u'yes': True, u'true': True, u'on': True,
-                          u'0': False, u'no': False, u'false': False, u'off': False}
+        BOOLEAN_STATES = {'1': True, 'yes': True, 'true': True, 'on': True,
+                          '0': False, 'no': False, 'false': False, 'off': False}
 
         def __init__(self, defaults=None, dict_type=OrderedDict,
                      allow_no_value=False, **kwargs):
 
             # keyword-only arguments
-            delimiters = kwargs.get('delimiters', (u'=', u':'))
-            comment_prefixes = kwargs.get('comment_prefixes', (u'#', u';'))
+            delimiters = kwargs.get('delimiters', ('=', ':'))
+            comment_prefixes = kwargs.get('comment_prefixes', ('#', ';'))
             inline_comment_prefixes = kwargs.get('inline_comment_prefixes', None)
             strict = kwargs.get('strict', True)
             empty_lines_in_values = kwargs.get('empty_lines_in_values', True)
@@ -690,10 +691,10 @@ if PY2 or PY33 or PY34:
                 for key, value in defaults.items():
                     self._defaults[self.optionxform(key)] = value
             self._delimiters = tuple(delimiters)
-            if delimiters == (u'=', u':'):
+            if delimiters == ('=', ':'):
                 self._optcre = self.OPTCRE_NV if allow_no_value else self.OPTCRE
             else:
-                d = u"|".join(re.escape(d) for d in delimiters)
+                d = "|".join(re.escape(d) for d in delimiters)
                 if allow_no_value:
                     self._optcre = re.compile(self._OPT_NV_TMPL.format(delim=d),
                                               re.VERBOSE)
@@ -729,7 +730,7 @@ if PY2 or PY33 or PY34:
             already exists. Raise ValueError if name is DEFAULT.
             """
             if section == self.default_section:
-                raise ValueError(u'Invalid section name: %r' % section)
+                raise ValueError('Invalid section name: %r' % section)
 
             if section in self._sections:
                 raise DuplicateSectionError(section)
@@ -791,12 +792,12 @@ if PY2 or PY33 or PY34:
                     source = '<???>'
             self._read(f, source)
 
-        def read_string(self, string, source=u'<string>'):
+        def read_string(self, string, source='<string>'):
             """Read configuration from a given string."""
             sfile = StringIO(string)
             self.read_file(sfile, source)
 
-        def read_dict(self, dictionary, source=u'<dict>'):
+        def read_dict(self, dictionary, source='<dict>'):
             """Read configuration from a dictionary.
 
             Keys are section names, values are dictionaries with keys and values
@@ -830,8 +831,8 @@ if PY2 or PY33 or PY34:
         def readfp(self, fp, filename=None):
             """Deprecated, use read_file instead."""
             warnings.warn(
-                u"This method will be removed in future versions.  "
-                u"Use 'parser.read_file()' instead.",
+                "This method will be removed in future versions.  "
+                "Use 'parser.read_file()' instead.",
                 DeprecationWarning, stacklevel=2
             )
             self.read_file(fp, source=filename)
@@ -996,7 +997,7 @@ if PY2 or PY33 or PY34:
             between keys and values are surrounded by spaces.
             """
             if space_around_delimiters:
-                d = u" {0} ".format(self._delimiters[0])
+                d = " {0} ".format(self._delimiters[0])
             else:
                 d = self._delimiters[0]
             if self._defaults:
@@ -1008,16 +1009,16 @@ if PY2 or PY33 or PY34:
 
         def _write_section(self, fp, section_name, section_items, delimiter):
             """Write a single section to the specified `fp'."""
-            fp.write(u"[{0}]\n".format(section_name))
+            fp.write("[{0}]\n".format(section_name))
             for key, value in section_items:
                 value = self._interpolation.before_write(self, section_name, key,
                                                          value)
                 if value is not None or not self._allow_no_value:
-                    value = delimiter + str(value).replace(u'\n', u'\n\t')
+                    value = delimiter + str(value).replace('\n', '\n\t')
                 else:
-                    value = u""
-                fp.write(u"{0}{1}\n".format(key, value))
-            fp.write(u"\n")
+                    value = ""
+                fp.write("{0}{1}\n".format(key, value))
+            fp.write("\n")
 
         def remove_option(self, section, option):
             """Remove an option."""
@@ -1061,7 +1062,7 @@ if PY2 or PY33 or PY34:
 
         def __delitem__(self, key):
             if key == self.default_section:
-                raise ValueError(u"Cannot remove the default section.")
+                raise ValueError("Cannot remove the default section.")
             if not self.has_section(key):
                 raise KeyError(key)
             self.remove_section(key)
@@ -1148,7 +1149,7 @@ if PY2 or PY33 or PY34:
                     # is it a section header?
                     mo = self.SECTCRE.match(value)
                     if mo:
-                        sectname = mo.group(u'header')
+                        sectname = mo.group('header')
                         if sectname in self._sections:
                             if self._strict and sectname in elements_added:
                                 raise DuplicateSectionError(sectname, fpname,
@@ -1171,7 +1172,7 @@ if PY2 or PY33 or PY34:
                     else:
                         mo = self._optcre.match(value)
                         if mo:
-                            optname, vi, optval = mo.group(u'option', u'vi', u'value')
+                            optname, vi, optval = mo.group('option', 'vi', 'value')
                             if not optname:
                                 e = self._handle_error(e, fpname, lineno, line)
                             optname = self.optionxform(optname.rstrip())
@@ -1206,7 +1207,7 @@ if PY2 or PY33 or PY34:
             for section, options in all_sections:
                 for name, val in options.items():
                     if isinstance(val, list):
-                        val = u'\n'.join(val).rstrip()
+                        val = '\n'.join(val).rstrip()
                     options[name] = self._interpolation.before_read(self,
                                                                     section,
                                                                     name, val)
@@ -1241,7 +1242,7 @@ if PY2 or PY33 or PY34:
             """Return a boolean value translating from other types if necessary.
             """
             if value.lower() not in self.BOOLEAN_STATES:
-                raise ValueError(u'Not a boolean: %s' % value)
+                raise ValueError('Not a boolean: %s' % value)
             return self.BOOLEAN_STATES[value.lower()]
 
         def _validate_value_types(self, **kwargs):
@@ -1258,9 +1259,9 @@ if PY2 or PY33 or PY34:
             access and in ConfigParser.set().
             """
             # keyword-only arguments
-            section = kwargs.get('section', u"")
-            option = kwargs.get('option', u"")
-            value = kwargs.get('value', u"")
+            section = kwargs.get('section', "")
+            option = kwargs.get('option', "")
+            value = kwargs.get('value', "")
 
             # Python2 stuff
             if isinstance(section, bytes):
@@ -1271,12 +1272,12 @@ if PY2 or PY33 or PY34:
                 value = value.decode('utf8')
 
             if not isinstance(section, str):
-                raise TypeError(u"section names must be strings")
+                raise TypeError("section names must be strings")
             if not isinstance(option, str):
-                raise TypeError(u"option keys must be strings")
+                raise TypeError("option keys must be strings")
             if not self._allow_no_value or value:
                 if not isinstance(value, str):
-                    raise TypeError(u"option values must be strings")
+                    raise TypeError("option values must be strings")
 
             return section, option, value
 
@@ -1310,9 +1311,9 @@ if PY2 or PY33 or PY34:
         def __init__(self, *args, **kwargs):
             super(SafeConfigParser, self).__init__(*args, **kwargs)
             warnings.warn(
-                u"The SafeConfigParser class has been renamed to ConfigParser "
-                u"in Python 3.2. This alias will be removed in future versions."
-                u" Use ConfigParser directly instead.",
+                "The SafeConfigParser class has been renamed to ConfigParser "
+                "in Python 3.2. This alias will be removed in future versions."
+                " Use ConfigParser directly instead.",
                 DeprecationWarning, stacklevel=2
             )
 
@@ -1330,7 +1331,7 @@ if PY2 or PY33 or PY34:
                 setattr(self, key, getter)
 
         def __repr__(self):
-            return u'<Section: {0}>'.format(self._name)
+            return '<Section: {0}>'.format(self._name)
 
         def __getitem__(self, key):
             if not self._parser.has_option(self._name, key):
@@ -1406,7 +1407,7 @@ if PY2 or PY33 or PY34:
                 m = self.GETTERCRE.match(getter)
                 if not m or not callable(getattr(self._parser, getter)):
                     continue
-                self._data[m.group(u'name')] = None   # See class docstring.
+                self._data[m.group('name')] = None   # See class docstring.
 
         def __getitem__(self, key):
             return self._data[key]
@@ -1415,10 +1416,10 @@ if PY2 or PY33 or PY34:
             try:
                 k = 'get' + key
             except TypeError:
-                raise ValueError(u'Incompatible key: {} (type: {})'
+                raise ValueError('Incompatible key: {} (type: {})'
                                  ''.format(key, type(key)))
             if k == 'get':
-                raise ValueError(u'Incompatible key: cannot use "" as a name')
+                raise ValueError('Incompatible key: cannot use "" as a name')
             self._data[key] = value
             func = functools.partial(self._parser._get_conv, conv=value)
             func.converter = value
@@ -1488,7 +1489,7 @@ class StdInterpolation(ExtendedInterpolation):
         if depth > MAX_INTERPOLATION_DEPTH:
             raise InterpolationDepthError(option, section, rawval)
         while rest:
-            p = rest.find(u"$")
+            p = rest.find("$")
             if p < 0:
                 accum.append(rest)
                 return
@@ -1497,14 +1498,14 @@ class StdInterpolation(ExtendedInterpolation):
                 rest = rest[p:]
             # p is no longer used
             c = rest[1:2]
-            if c == u"$":
-                accum.append(u"$")
+            if c == "$":
+                accum.append("$")
                 rest = rest[2:]
-            elif c == u"{":
+            elif c == "{":
                 m = self._KEYCRE.match(rest)
                 if m is None:
                     raise InterpolationSyntaxError(option, section,
-                          u"bad interpolation variable reference %r" % rest)
+                          "bad interpolation variable reference %r" % rest)
                 path = m.group(1).split(':')
                 rest = rest[m.end():]
                 sect = section
@@ -1526,8 +1527,8 @@ class StdInterpolation(ExtendedInterpolation):
                         #     "More than one ':' found: %r" % (rest,))
                 except (KeyError, NoSectionError, NoOptionError):
                     raise from_none(InterpolationMissingOptionError(
-                        option, section, rawval, u":".join(path)))
-                if u"$" in v:
+                        option, section, rawval, ":".join(path)))
+                if "$" in v:
                     self._interpolate_some(parser, opt, accum, v, sect,
                                            dict(parser.items(sect, raw=True)),
                                            depth + 1)
@@ -1536,8 +1537,8 @@ class StdInterpolation(ExtendedInterpolation):
             else:
                 raise InterpolationSyntaxError(
                     option, section,
-                    u"'$' must be followed by '$' or '{', "
-                    u"found: %r" % (rest,))
+                    "'$' must be followed by '$' or '{', "
+                    "found: %r" % (rest,))
 
 
 class StdConfigParser(ConfigParser):
@@ -1551,8 +1552,8 @@ class StdConfigParser(ConfigParser):
         super(StdConfigParser, self).__init__(defaults=defaults,
                                               dict_type=OrderedDict,
                                               allow_no_value=False,
-                                              delimiters=(u'=', u':'),
-                                              comment_prefixes=(u'#', ),
+                                              delimiters=('=', ':'),
+                                              comment_prefixes=('#', ),
                                               inline_comment_prefixes=None,
                                               strict=True,
                                               empty_lines_in_values=True,
@@ -1568,8 +1569,8 @@ class StdConfigParser(ConfigParser):
         try:
             return super(StdConfigParser, self)._get_conv(section, option, conv, **kwargs)
         except Exception as ex:
-            ex.args += (u"This error occured by getting option %r in section %r"
-                        u" with converter %r." % (option, section, conv.__name__), )
+            ex.args += ("This error occured by getting option %r in section %r"
+                        " with converter %r." % (option, section, conv.__name__), )
             raise
 
 # If someone looks at this implementation,
