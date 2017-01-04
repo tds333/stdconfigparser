@@ -224,12 +224,18 @@ def test_conv_error():
     parser.read_string(test)
     sec = parser["test"]
     assert sec.getint("int") == 100
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as exc_info:
         assert sec.getint("string")
-    with pytest.raises(ValueError):
+    assert "This error occured by getting option" in str(exc_info.value)
+    assert "'string'" in str(exc_info.value)
+    assert "'test'" in str(exc_info.value)
+    with pytest.raises(ValueError) as exc_info:
         assert sec.getfloat("string")
-    with pytest.raises(ValueError):
+    assert "This error occured by getting option" in str(exc_info.value)
+    with pytest.raises(ValueError) as exc_info:
         assert sec.getboolean("string")
+    assert "This error occured by getting option" in str(exc_info.value)
+    assert "'_convert_to_boolean'" in str(exc_info.value)
 
 
 def test_ParsingError():

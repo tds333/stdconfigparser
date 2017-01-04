@@ -38,7 +38,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-__version__ = "1.0.dev0"
+__version__ = "1.0.dev1"
 
 __all__ = ["NoSectionError", "DuplicateOptionError", "DuplicateSectionError",
            "NoOptionError", "InterpolationError", "InterpolationDepthError",
@@ -1569,8 +1569,9 @@ class StdConfigParser(ConfigParser):
         try:
             return super(StdConfigParser, self)._get_conv(section, option, conv, **kwargs)
         except Exception as ex:
-            ex.args += ("This error occured by getting option %r in section %r"
-                        " with converter %r." % (option, section, conv.__name__), )
+            if hasattr(ex, "args"):
+                ex.args += ("This error occured by getting option %r in section %r"
+                            " with converter %r." % (option, section, conv.__name__), )
             raise
 
 # If someone looks at this implementation,
