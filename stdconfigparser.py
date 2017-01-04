@@ -38,7 +38,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-__version__ = "1.0.dev1"
+__version__ = "1.0"
 
 __all__ = ["NoSectionError", "DuplicateOptionError", "DuplicateSectionError",
            "NoOptionError", "InterpolationError", "InterpolationDepthError",

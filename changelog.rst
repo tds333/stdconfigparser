@@ -5,6 +5,7 @@ Changelog
 ---
 
 - Support Python 3.6
+- Improve stability in error cases. Test improved error reporting.
 
 
 0.9
