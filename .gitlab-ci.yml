@@ -21,3 +21,5 @@ py36:
   script:
     - source venv/py36/bin/activate
     - python -m pytest
+  tags:
+    - python3.6
