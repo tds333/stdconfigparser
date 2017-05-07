@@ -16,7 +16,7 @@ py36:
   tags:
     - python3.6
 
-py36:
+py36-test:
   stage: test
   script:
     - source venv/py36/bin/activate
