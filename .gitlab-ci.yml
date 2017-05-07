@@ -9,17 +9,9 @@ py36:
     - source venv/py36/bin/activate
     - pip install -r requirements.txt
     - python setup.py sdist bdist_wheel
+    - python -m pytest
   artifacts:
     paths:
-    - venv
     - dist
-  tags:
-    - python3.6
-
-py36-test:
-  stage: test
-  script:
-    - source venv/py36/bin/activate
-    - python -m pytest
   tags:
     - python3.6
