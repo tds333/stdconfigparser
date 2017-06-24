@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2016 Wolfgang Langner
+# Copyright (c) 2017 Wolfgang Langner
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,18 +19,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-This module provides the StdConfigParser class. A simple
-standard INI configuration parser with a specified format. All is based
-on the Python standard library configparser.
-For Python 2.7 it contains backported classes from Python 3.5 configparser
-module.
-
-The StdConfigParser includes also additional converter methods.
-They allow really powerful configurations by keeping all simple for the user.
-See what can be done for your configuration with only these few additional lines
-of code.
-"""
+"A standard INI style configuration parser."
 
 from __future__ import absolute_import
 from __future__ import division
@@ -38,7 +27,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-__version__ = "1.1.dev0"
+__version__ = "1.0.1"
 
 __all__ = ["NoSectionError", "DuplicateOptionError", "DuplicateSectionError",
            "NoOptionError", "InterpolationError", "InterpolationDepthError",

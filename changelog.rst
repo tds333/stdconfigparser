@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.1
+---
+
+- Use flit for packaging
+
 1.0
 ---
 
