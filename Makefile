@@ -1,5 +1,5 @@
 
-PY=./venv/py35/bin/python
+PY=./venv/py36/bin/python
 
 .PHONY: docu test dist test_style build
 
@@ -13,7 +13,7 @@ teststyle:
 	$(PY) -m flake8 stdconfigparser.py
 
 build:
-	$(PY) setup.py sdist bdist_wheel
+	$(PY) -m flit build
 
 clean:
 	rm -rf build/*
@@ -25,7 +25,7 @@ clean:
 dist: test teststyle docu build
 
 release: clean dist
-	$(PY) -m twine upload dist/*
+	$(PY) -m flit publish
 
 testrelease: clean dist
-	$(PY) -m twine upload -r pypitest dist/*
+	$(PY) -m flit --repository pypitest publish
