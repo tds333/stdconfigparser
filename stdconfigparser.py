@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2017 Wolfgang Langner
+# Copyright (c) 2016 - 2017 Wolfgang Langner
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 __all__ = ["NoSectionError", "DuplicateOptionError", "DuplicateSectionError",
            "NoOptionError", "InterpolationError", "InterpolationDepthError",
